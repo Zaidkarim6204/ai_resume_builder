@@ -88,8 +88,8 @@ def get_gemini_response(prompt):
 def sanitize_text(text):
     return text.encode('latin-1', 'ignore').decode('latin-1')
 
-# ADDED: Email, LinkedIn, and GitHub parameters for clickable links
-def create_professional_pdf(text_content, title="Document", email="", linkedin="", github=""):
+# ADDED: Phone parameter for clickable links
+def create_professional_pdf(text_content, title="Document", email="", phone="", linkedin="", github=""):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -99,11 +99,14 @@ def create_professional_pdf(text_content, title="Document", email="", linkedin="
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 10, txt=title, ln=True, align='C')
     
-    # NEW: Clickable Links
+    # Clickable Contact Links
     pdf.set_font("Arial", size=10)
     if email:
         pdf.set_text_color(0, 102, 204) # Blue link color
         pdf.cell(0, 5, txt=f"Email: {sanitize_text(email)}", ln=True, align='C', link=f"mailto:{email}")
+    if phone:
+        pdf.set_text_color(0, 102, 204)
+        pdf.cell(0, 5, txt=f"Phone: {sanitize_text(phone)}", ln=True, align='C', link=f"tel:{phone.replace(' ', '')}")
     if linkedin:
         pdf.set_text_color(0, 102, 204)
         pdf.cell(0, 5, txt="LinkedIn Profile", ln=True, align='C', link=linkedin)
@@ -133,9 +136,10 @@ def create_professional_pdf(text_content, title="Document", email="", linkedin="
 if 'resume_text' not in st.session_state: st.session_state['resume_text'] = ""
 if 'target_job' not in st.session_state: st.session_state['target_job'] = ""
 
-# ADDED: Store the contact details so they can be passed to the PDF later
+# Store the contact details so they can be passed to the PDF later
 if 'user_name' not in st.session_state: st.session_state['user_name'] = "Professional Resume"
 if 'user_email' not in st.session_state: st.session_state['user_email'] = ""
+if 'user_phone' not in st.session_state: st.session_state['user_phone'] = ""
 if 'user_linkedin' not in st.session_state: st.session_state['user_linkedin'] = ""
 if 'user_github' not in st.session_state: st.session_state['user_github'] = ""
 
@@ -243,24 +247,26 @@ elif app_mode == "📝 Smart Resume Builder":
         if input_method == "⚡ Auto-Parse (Paste LinkedIn/Resume Data)":
             st.info("💡 **Fast-Import:** Skip the typing! Copy your entire LinkedIn profile or old resume text and paste it below. The AI will extract and organize it automatically.")
             
-            # ADDED: Added fields here to grab links for PDF
+            # ADDED: Auto-Parse Phone Number included here
             col_a, col_b = st.columns(2)
             with col_a:
                 auto_name = st.text_input("Full Name *", key="auto_name", placeholder="e.g. Syed Zaid Karim")
                 auto_email = st.text_input("Email (for PDF links)", key="auto_email")
                 auto_github = st.text_input("GitHub URL (for PDF links)", key="auto_github")
             with col_b:
-                auto_target = st.text_input("Target Job Title *", key="auto_target", placeholder="e.g. Data Analyst")
+                auto_target = st.text_input("Target Job Title *", key="auto_target", placeholder="e.g. Computer Science Engineering Student")
+                auto_phone = st.text_input("Phone Number (for PDF links)", key="auto_phone")
                 auto_linkedin = st.text_input("LinkedIn URL (for PDF links)", key="auto_linkedin")
                 
             raw_data = st.text_area("Raw Experience / Education / LinkedIn Data *", height=200, placeholder="Paste your raw text here...")
             
             if st.button("✨ Auto-Generate AI Resume", type="primary"):
                 if auto_name and auto_target and raw_data:
-                    # ADDED: Save inputs to memory
+                    # Save inputs to memory
                     st.session_state['target_job'] = auto_target
                     st.session_state['user_name'] = auto_name
                     st.session_state['user_email'] = auto_email
+                    st.session_state['user_phone'] = auto_phone
                     st.session_state['user_linkedin'] = auto_linkedin
                     st.session_state['user_github'] = auto_github
                     
@@ -268,11 +274,11 @@ elif app_mode == "📝 Smart Resume Builder":
                         prompt = f"""
                         Act as an expert Resume Writer and Career Coach. Create a professional resume using this style format: {style}.
                         USER DATA:
-                        Name: {auto_name} | Target Role: {auto_target}
+                        Target Role: {auto_target}
                         Raw Data (Parse this carefully): {raw_data}
                         RULES:
                         - Create a compelling "PROFESSIONAL SUMMARY" at the top.
-                        - DO NOT write the contact info (Name, email, links) at the top. The PDF will add them.
+                        - DO NOT write the contact info (Name, email, phone, links) at the top. The PDF compiler will handle it.
                         - Organize into clear, UPPERCASE sections (EXPERIENCE, EDUCATION, SKILLS, PROJECTS).
                         - Filter out irrelevant clutter. Extract only professional achievements.
                         - Expand rough notes into professional bullet points using action verbs.
@@ -311,10 +317,11 @@ elif app_mode == "📝 Smart Resume Builder":
             
             if st.button("✨ Generate AI Resume from Form", type="primary"):
                 if man_name and man_target and man_education and man_skills:
-                    # ADDED: Save inputs to memory
+                    # Save inputs to memory
                     st.session_state['target_job'] = man_target 
                     st.session_state['user_name'] = man_name
                     st.session_state['user_email'] = man_email
+                    st.session_state['user_phone'] = man_phone
                     st.session_state['user_linkedin'] = man_linkedin
                     st.session_state['user_github'] = man_github
                     
@@ -322,8 +329,7 @@ elif app_mode == "📝 Smart Resume Builder":
                         prompt = f"""
                         Act as an expert Resume Writer and Career Coach. Create a professional resume using this style format: {style}.
                         USER DATA:
-                        Name: {man_name} | Target Role: {man_target}
-                        Contact: {man_email} | {man_phone} | {man_linkedin} | {man_github}
+                        Target Role: {man_target}
                         Provided Summary: {man_summary}
                         Education: {man_education}
                         Experience: {man_experience}
@@ -331,7 +337,7 @@ elif app_mode == "📝 Smart Resume Builder":
                         Skills: {man_skills}
                         RULES:
                         - Create a compelling "PROFESSIONAL SUMMARY" at the top. Use the 'Provided Summary' if available and refine it, otherwise write one based on their data.
-                        - DO NOT write the contact info (Name, email, links) at the top. The PDF will add them.
+                        - DO NOT write the contact info (Name, email, phone, links) at the top. The PDF compiler will handle it.
                         - Organize into clear, UPPERCASE sections (EXPERIENCE, EDUCATION, SKILLS, PROJECTS).
                         - Expand their rough notes into highly professional bullet points using action verbs.
                         - Do NOT use markdown code blocks (```). Return ONLY plain text.
@@ -344,15 +350,16 @@ elif app_mode == "📝 Smart Resume Builder":
     with tab2:
         st.markdown("### ✍️ Refine & Export")
         if st.session_state['resume_text']:
-            st.info("💡 Your Name, Email, LinkedIn, and GitHub links will automatically be added as clickable hyperlinks at the top of the downloaded PDF.")
+            st.info("💡 Your Name, Email, Phone, LinkedIn, and GitHub links will automatically be added as clickable hyperlinks at the top of the downloaded PDF.")
             edited_resume = st.text_area("Final Document (You can manually type and edit here):", value=st.session_state['resume_text'], height=500)
             st.session_state['resume_text'] = edited_resume
             
-            # ADDED: Passed the saved links into the PDF generator
+            # Pass all the saved contact info into the PDF generator
             pdf_data = create_professional_pdf(
                 st.session_state['resume_text'], 
                 title=st.session_state['user_name'],
                 email=st.session_state['user_email'],
+                phone=st.session_state['user_phone'],
                 linkedin=st.session_state['user_linkedin'],
                 github=st.session_state['user_github']
             )
@@ -405,11 +412,12 @@ elif app_mode == "✉️ Cover Letter Generator":
                     
                     st.text_area("Your Custom Cover Letter:", value=letter_output, height=400)
                     
-                    # ADDED: Passed links here too so cover letter matches resume
+                    # Passed links here too so cover letter matches resume header
                     pdf_letter = create_professional_pdf(
                         letter_output, 
                         title=f"Cover Letter - {st.session_state['user_name']}",
                         email=st.session_state['user_email'],
+                        phone=st.session_state['user_phone'],
                         linkedin=st.session_state['user_linkedin'],
                         github=st.session_state['user_github']
                     )
