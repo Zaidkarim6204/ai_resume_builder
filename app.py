@@ -7,7 +7,7 @@ import pandas as pd
 from dotenv import load_dotenv
 
 # --- 1. CONFIGURATION ---
-st.set_page_config(page_title="AI Resume Architect", page_icon="🏗️", layout="wide")
+st.set_page_config(page_title="ZNA Dashboard | AI Resume Architect", page_icon="🏗️", layout="wide")
 
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
@@ -19,61 +19,121 @@ if not api_key:
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-flash-latest')
 
-# --- 2. INTERACTIVE CSS STYLING ---
+# --- 2. PREMIUM EYE-CATCHING CSS STYLING ---
 st.markdown("""
 <style>
-    /* Main App Background */
-    .stApp { background-color: #0B0E14; color: #F0F2F6; }
+    /* 1. Import ZNA Landing Page Font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    /* 2. Sleek Dark App Background */
+    .stApp { 
+        background-color: #0f172a; 
+        color: #f8fafc; 
+    }
     .block-container { padding-top: 2rem; padding-bottom: 0rem; }
     
-    /* Interactive Metric Cards */
+    /* 3. ZNA Branded Sidebar */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0b3d6e 0%, #062340 100%) !important;
+        border-right: 1px solid #1e293b;
+    }
+    [data-testid="stSidebar"] * {
+        color: #ffffff !important;
+    }
+    [data-testid="stSidebar"] h2 {
+        color: #ffb800 !important; /* Yellow sidebar header */
+        -webkit-text-fill-color: #ffb800 !important;
+    }
+
+    /* 4. Glassmorphism Metric Cards */
     div[data-testid="metric-container"] { 
-        background: linear-gradient(145deg, #1A1C23 0%, #0E1117 100%); 
-        border: 1px solid #2B2D38; 
-        padding: 20px; 
-        border-radius: 12px; 
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease-in-out;
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important; 
+        padding: 24px !important; 
+        border-radius: 16px !important; 
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
     }
     div[data-testid="metric-container"]:hover {
-        transform: translateY(-5px);
-        border-color: #00C9FF;
-        box-shadow: 0 8px 25px rgba(0, 201, 255, 0.15);
+        transform: translateY(-6px) !important;
+        border-color: #ffb800 !important;
+        box-shadow: 0 8px 25px rgba(255, 184, 0, 0.15) !important;
+    }
+    div[data-testid="metric-container"] label {
+        color: #94a3b8 !important;
+        font-weight: 500 !important;
+    }
+    div[data-testid="metric-container"] div {
+        color: #f8fafc !important;
     }
 
-    /* Glowing Primary Button */
+    /* 5. ZNA Glowing Yellow Buttons */
     .stButton>button[kind="primary"] { 
-        background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%); 
-        color: #111; 
-        border: none; 
-        font-weight: 800; 
-        width: 100%; 
-        border-radius: 10px;
-        transition: all 0.3s ease; 
+        background: linear-gradient(135deg, #ffb800 0%, #f59e0b 100%) !important; 
+        color: #000000 !important; 
+        font-weight: 800 !important; 
+        font-size: 16px !important;
+        border-radius: 50px !important; /* Pill shape */
+        border: none !important;
+        padding: 12px 24px !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 15px rgba(255, 184, 0, 0.3) !important;
     }
     .stButton>button[kind="primary"]:hover { 
-        transform: scale(1.02); 
-        box-shadow: 0 0 20px rgba(0, 201, 255, 0.4); 
+        transform: translateY(-2px) !important; 
+        box-shadow: 0 8px 25px rgba(255, 184, 0, 0.5) !important; 
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
     }
 
-    /* Clean Secondary Buttons */
-    .stButton>button[kind="secondary"] { 
-        border-radius: 10px; 
-        transition: all 0.3s ease;
+    /* 6. Modern Inputs & Text Areas */
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stSelectbox>div>div>div {
+        background-color: rgba(15, 23, 42, 0.6) !important;
+        color: #ffffff !important;
+        border-radius: 10px !important;
+        border: 1px solid #334155 !important;
+        transition: all 0.3s ease !important;
+        padding: 10px !important;
     }
-    .stButton>button[kind="secondary"]:hover {
-        border-color: #00C9FF;
-        color: #00C9FF;
+    .stTextInput>div>div>input:focus, .stTextArea>div>div>textarea:focus, .stSelectbox>div>div>div:focus {
+        border-color: #ffb800 !important;
+        box-shadow: 0 0 0 1px #ffb800 !important;
     }
 
-    /* Tab Styling */
+    /* 7. Beautiful Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 24px;
+        background-color: transparent;
+    }
     .stTabs [data-baseweb="tab"] {
         height: 50px;
         border-radius: 8px 8px 0 0;
+        background-color: transparent !important;
+        color: #94a3b8 !important;
+        font-weight: 600 !important;
     }
     .stTabs [aria-selected="true"] {
-        background-color: rgba(0, 201, 255, 0.05);
-        border-bottom-color: #00C9FF !important;
+        color: #ffb800 !important;
+        border-bottom: 3px solid #ffb800 !important;
+        background-color: rgba(255, 184, 0, 0.05) !important;
+    }
+
+    /* 8. Gradient Headings */
+    h1, h3, h4 {
+        background: -webkit-linear-gradient(45deg, #ffffff, #94a3b8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800 !important;
+    }
+    
+    /* 9. Soft Alert Boxes */
+    .stAlert {
+        border-radius: 12px !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -88,7 +148,7 @@ def get_gemini_response(prompt):
 def sanitize_text(text):
     return text.encode('latin-1', 'ignore').decode('latin-1')
 
-# ADDED: Phone parameter for clickable links
+# Email, Phone, LinkedIn, and GitHub parameters for clickable links
 def create_professional_pdf(text_content, title="Document", email="", phone="", linkedin="", github=""):
     pdf = FPDF()
     pdf.add_page()
@@ -160,7 +220,7 @@ with st.sidebar:
         job_query = urllib.parse.quote(st.session_state['target_job'])
         st.markdown(f"""
         <a href="https://www.linkedin.com/jobs/search/?keywords={job_query}" target="_blank" style="text-decoration: none;">
-            <button style="background-color: #0077b5; padding: 12px; width: 100%; border-radius: 8px; color: white; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.3s ease;">
+            <button style="background-color: #ffb800; padding: 12px; width: 100%; border-radius: 50px; color: black; border: none; font-weight: 800; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.3s ease;">
                 Apply on LinkedIn ↗
             </button>
         </a>
@@ -194,7 +254,7 @@ if app_mode == "📊 Overview Dashboard":
             [65, 72, 68, 85, 88, 92, 96],
             columns=["ATS Match Score (%)"]
         )
-        st.line_chart(chart_data, color="#00C9FF")
+        st.line_chart(chart_data, color="#ffb800")
         
         st.markdown("### 🚀 Quick Start Guide")
         with st.expander("📝 1. How to build your first resume?"):
@@ -205,7 +265,7 @@ if app_mode == "📊 Overview Dashboard":
     with dash_col2:
         st.markdown("### ⚡ Live System Logs")
         st.markdown("""
-        <div style='background-color: #1A1C23; padding: 20px; border-radius: 12px; border: 1px solid #2B2D38;'>
+        <div style='background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); padding: 24px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);'>
         """, unsafe_allow_html=True)
         
         st.success("✅ **[System]** LLM Engine connected to Gemini 2.0 Flash.")
@@ -247,7 +307,7 @@ elif app_mode == "📝 Smart Resume Builder":
         if input_method == "⚡ Auto-Parse (Paste LinkedIn/Resume Data)":
             st.info("💡 **Fast-Import:** Skip the typing! Copy your entire LinkedIn profile or old resume text and paste it below. The AI will extract and organize it automatically.")
             
-            # ADDED: Auto-Parse Phone Number included here
+            # Auto-Parse Phone Number included here
             col_a, col_b = st.columns(2)
             with col_a:
                 auto_name = st.text_input("Full Name *", key="auto_name", placeholder="e.g. Syed Zaid Karim")
