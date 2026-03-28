@@ -121,12 +121,26 @@ st.markdown("""
         transform: translateY(-2px); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4) !important;
         background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
     }
+    
+    /* Global Job Portal Link Rules */
     .side-job-portal {
-        background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; color: #e2e8f0 !important;
-        text-align: center; padding: 14px; font-weight: 600; cursor: pointer; display: inline-block;
-        width: 100%; margin-top: 10px; text-decoration: none; transition: all 0.3s ease; font-size: 13px;
+        border-radius: 12px; 
+        text-align: center; 
+        padding: 14px; 
+        font-weight: 600; 
+        cursor: pointer; 
+        display: inline-block;
+        width: 100%; 
+        margin-top: 10px; 
+        text-decoration: none; 
+        transition: all 0.3s ease; 
+        font-size: 13px;
+        color: white !important; /* Force all text to white */
     }
-    .side-job-portal:hover { border-color: #3b82f6; color: #ffffff !important; box-shadow: 0 0 15px rgba(59,130,246,0.1); }
+    .side-job-portal:hover { 
+        filter: brightness(1.2); 
+        box-shadow: 0 0 15px rgba(255,255,255,0.2); 
+    }
 
     /* Steps UI */
     .zna-steps { display: flex; justify-content: space-around; margin-bottom: 30px; position: relative; }
@@ -210,7 +224,7 @@ with st.sidebar:
         "✉️ Letter Engine", 
         "🔍 ATS Scanner",
         "🎙️ Interview Prep",
-        "🗺️ Skill Gap Analyzer" # <-- BRAND NEW FEATURE
+        "🗺️ Skill Gap Analyzer" 
     ])
     st.markdown("---")
     
@@ -230,13 +244,13 @@ with st.sidebar:
         
         st.markdown(f"""
         <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 10px;">
-            <a href="https://www.linkedin.com/jobs/search/?keywords={linkedin_query}" target="_blank" class="side-job-portal" style="background: #0a66c2; color: white !important; border: none;">
+            <a href="https://www.linkedin.com/jobs/search/?keywords={linkedin_query}" target="_blank" class="side-job-portal" style="background: #0a66c2; border: none;">
                 <i class="fab fa-linkedin" style="margin-right: 8px;"></i> LinkedIn ↗
             </a>
-            <a href="https://in.indeed.com/jobs?q={indeed_query}" target="_blank" class="side-job-portal" style="background: #2557a7; color: white !important; border: none;">
+            <a href="https://in.indeed.com/jobs?q={indeed_query}" target="_blank" class="side-job-portal" style="background: #2557a7; border: none;">
                 <i class="fas fa-info-circle" style="margin-right: 8px;"></i> Indeed ↗
             </a>
-            <a href="https://www.naukri.com/{naukri_query}-jobs" target="_blank" class="side-job-portal" style="background: #ffffff; color: #121224 !important; border: none;">
+            <a href="https://www.naukri.com/{naukri_query}-jobs" target="_blank" class="side-job-portal" style="background: #0075FF; border: none;">
                 <i class="fas fa-briefcase" style="margin-right: 8px;"></i> Naukri ↗
             </a>
         </div>
@@ -464,7 +478,6 @@ elif app_mode == "🎙️ Interview Prep":
                 st.markdown("<div style='text-align: center; color: #30363d; margin-top: 100px;'><i class='fas fa-user-tie fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>READY TO PREPARE...</div></div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
-# --- NEW FEATURE: SKILL GAP ANALYZER ---
 elif app_mode == "🗺️ Skill Gap Analyzer":
     st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
     st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-map-marked-alt' style='color: #10b981; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Skill Gap & Roadmap</h2></div>", unsafe_allow_html=True)
