@@ -5,6 +5,7 @@ import os
 import urllib.parse
 import pandas as pd
 from dotenv import load_dotenv
+import json  # Import JSON for strict parsing
 
 # --- 1. CONFIGURATION ---
 st.set_page_config(page_title="Elite Studio | AI Career Architect", page_icon="⚡", layout="wide")
@@ -65,6 +66,40 @@ st.markdown("""
         border-color: rgba(59, 130, 246, 0.3);
     }
 
+    /* --- NEW CSS for Visual Cards (STAR/Roadmap) --- */
+    .validated-badge { background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; margin-bottom: 15px;}
+    .prep-question { font-size: 22px; font-weight: 800; margin-bottom: 15px; color: white;}
+    .core-comp-tag { background: #0f172a; border: 1px solid #1e293b; color: #3b82f6; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 600; text-transform: uppercase; margin-right: 8px;}
+    
+    .star-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 25px; border-top: 1px solid #1e293b; padding-top: 20px;}
+    .star-col { background: #0c111e; border: 1px solid #1e293b; border-radius: 10px; padding: 20px; transition: border-color 0.3s ease;}
+    .star-col:hover { border-color: #3b82f6; }
+    .star-icon { font-size: 20px; color: #3b82f6; margin-bottom: 12px;}
+    .star-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #e2e8f0; margin-bottom: 8px;}
+    .star-text { font-size: 13px; color: #94a3b8; line-height: 1.6;}
+
+    .gap-analyzer-grid { display: grid; grid-template-columns: auto 1fr; gap: 40px; }
+    .roadmap-timeline-bar { width: 2px; background: #1e293b; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; position: relative;}
+    .roadmap-timeline-bar::before { content: ''; width: 14px; height: 14px; border-radius: 50%; background: #3b82f6; position: absolute; top: 0; left: -6px; }
+    .roadmap-timeline-bar::after { content: ''; width: 14px; height: 14px; border-radius: 50%; background: #1e293b; position: absolute; bottom: 0; left: -6px; }
+
+    .roadmap-content { display: flex; flex-direction: column; gap: 30px;}
+    .roadmap-week-card { background: #0c111e; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; transition: border-color 0.3s ease;}
+    .roadmap-week-card:hover { border-color: #10b981; }
+    .roadmap-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
+    .roadmap-number { background: #0f172a; color: #10b981; border: 1px solid #1e293b; font-size: 20px; font-weight: 800; width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center;}
+    .roadmap-goal { font-size: 16px; font-weight: 700; color: white;}
+    .roadmap-task-list { list-style: none; padding: 0; margin-top: 15px;}
+    .roadmap-task-list li { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 14px; margin-bottom: 8px;}
+    .roadmap-task-list li i { color: #10b981; font-size: 12px;}
+    .completed-badge { background: #10b981; color: white; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; text-transform: uppercase;}
+    .roadmap-project { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 15px; margin-top: 15px;}
+    .roadmap-project-title { font-size: 14px; font-weight: 700; color: white; margin-bottom: 5px;}
+    .roadmap-project-desc { font-size: 13px; color: #94a3b8;}
+
+    /* Missing Skill Tag */
+    .missing-skill-tag { background: #4c1d1d; border: 1px solid #7f1d1d; color: #f87171; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 600; text-transform: uppercase; margin-right: 8px;}
+
     /* Sidebar Styling */
     [data-testid="stSidebar"] {
         background-color: #050814 !important;
@@ -122,25 +157,11 @@ st.markdown("""
         background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
     }
     
-    /* Global Job Portal Link Rules */
     .side-job-portal {
-        border-radius: 12px; 
-        text-align: center; 
-        padding: 14px; 
-        font-weight: 600; 
-        cursor: pointer; 
-        display: inline-block;
-        width: 100%; 
-        margin-top: 10px; 
-        text-decoration: none; 
-        transition: all 0.3s ease; 
-        font-size: 13px;
-        color: white !important; /* Force all text to white */
+        border-radius: 12px; text-align: center; padding: 14px; font-weight: 600; cursor: pointer; display: inline-block;
+        width: 100%; margin-top: 10px; text-decoration: none; transition: all 0.3s ease; font-size: 13px; color: white !important;
     }
-    .side-job-portal:hover { 
-        filter: brightness(1.2); 
-        box-shadow: 0 0 15px rgba(255,255,255,0.2); 
-    }
+    .side-job-portal:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
 
     /* Steps UI */
     .zna-steps { display: flex; justify-content: space-around; margin-bottom: 30px; position: relative; }
@@ -155,9 +176,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- 3. HELPER FUNCTIONS ---
-def get_gemini_response(prompt):
+def get_gemini_response(prompt, json_mode=False):
     try:
-        return model.generate_content(prompt).text
+        response = model.generate_content(prompt)
+        text_output = response.text
+        if json_mode:
+            # Basic sanitization to remove markdown code blocks
+            return text_output.replace('```json', '').replace('```', '').strip()
+        return text_output
     except Exception as e:
         return f"Error: {str(e)}"
 
@@ -437,89 +463,211 @@ elif app_mode == "🔍 ATS Scanner":
 elif app_mode == "🎙️ Interview Prep":
     st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
     st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-microphone-alt' style='color: #f59e0b; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Interview Simulator</h2></div>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>AI-generated questions and strategies based on your exact profile.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>AI-generated structured questions and STAR method strategies based on your exact profile.</p>", unsafe_allow_html=True)
 
     if not st.session_state['resume_text']:
-        st.error("⚠️ Missing Profile Context! Please build your resume in the 'Resume Builder' tab first so the AI knows your background.")
+        st.error("⚠️ Missing Profile Context! Please build your resume first.")
     else:
-        col1, col2 = st.columns([0.4, 0.6])
+        # --- INPUT OPTIONS CARD ---
+        st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>INTERVIEW CONTEXT</div>", unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
         with col1:
-            st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>INTERVIEW CONTEXT</div>", unsafe_allow_html=True)
             interview_company = st.text_input("Target Company (Optional)", placeholder="e.g. Amazon, Google, Startup")
-            interview_type = st.selectbox("Interview Stage", ["HR Phone Screen", "Technical / Hard Skills", "Behavioral / Cultural Fit", "Executive / Final Round"])
-            
-            if st.button("🎙️ Generate Mock Interview", type="primary"):
-                with st.spinner("Analyzing profile for probable questions..."):
-                    prompt = f"""
-                    Act as an Expert Technical Recruiter and Hiring Manager conducting a {interview_type} interview for the role of {st.session_state['target_job']} at {interview_company if interview_company else 'a top tech company'}.
-                    
-                    Candidate's Resume Data:
-                    {st.session_state['resume_text']}
-                    
-                    Based EXACTLY on the specific projects, skills, and experience listed in this resume, generate the top 5 most highly probable interview questions they will be asked.
-                    
-                    For each question:
-                    1. State the Question clearly.
-                    2. Provide a "Strategy": Tell the candidate exactly which part of their resume they should highlight to answer it effectively using the STAR method.
-                    
-                    Keep the formatting clean, professional, and directly actionable.
-                    """
-                    st.session_state['interview_prep_output'] = get_gemini_response(prompt)
-            st.markdown("</div>", unsafe_allow_html=True)
-            
         with col2:
-            st.markdown("<div class='zna-card' style='height: 100%; min-height: 400px;'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>AI INTERVIEW BLUEPRINT</div>", unsafe_allow_html=True)
-            if 'interview_prep_output' in st.session_state:
-                st.text_area("", value=st.session_state['interview_prep_output'], height=450, label_visibility="collapsed")
+            interview_type = st.selectbox("Interview Stage", ["Behavioral / Cultural Fit", "Technical / Hard Skills", "HR Phone Screen", "Executive / Final Round"])
+            
+        if st.button("🎙️ Generate Mock Interview", type="primary"):
+            with st.spinner("Analyzing profile for probable questions..."):
+                # New strict prompt for JSON output
+                prompt = f"""
+                Act as an Expert Technical Recruiter and Hiring Manager conducting a {interview_type} interview for the role of {st.session_state['target_job']} at {interview_company if interview_company else 'a top tech company'}.
+                Candidate's Resume Data: {st.session_state['resume_text']}
                 
-                prep_pdf = create_professional_pdf(st.session_state['interview_prep_output'], title=f"Interview Prep - {st.session_state['user_name']}")
-                st.download_button("📥 Download Prep Sheet (PDF)", data=prep_pdf, file_name=f"Interview_Prep_{st.session_state['user_name'].replace(' ', '_')}.pdf", mime="application/pdf", type="primary")
-            else:
-                st.markdown("<div style='text-align: center; color: #30363d; margin-top: 100px;'><i class='fas fa-user-tie fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>READY TO PREPARE...</div></div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
+                Based EXACTLY on the specific projects, skills, and experience listed in this resume, generate the top 5 most highly probable interview questions they will be asked.
+                
+                Output MUST be a raw JSON object (no markdown code blocks) with this format:
+                {{
+                    "questions": [
+                        {{
+                            "number": 1,
+                            "question": "The actual question",
+                            "situation": "Situation strategy",
+                            "task": "Task strategy",
+                            "action": "Action strategy",
+                            "result": "Result strategy",
+                            "competencies": ["Leadership", "Adaptability"]
+                        }}
+                    ]
+                }}
+                """
+                json_response = get_gemini_response(prompt, json_mode=True)
+                try:
+                    st.session_state['interview_prep_data'] = json.loads(json_response)
+                except Exception as e:
+                    st.error(f"⚠️ Error parsing AI response. It might not be in valid JSON format. Raw output: {json_response[:200]}...")
+        st.markdown("</div>", unsafe_allow_html=True)
+            
+        # --- OUTPUT VISUALIZATION ---
+        if 'interview_prep_data' in st.session_state:
+            interview_data = st.session_state['interview_prep_data']
+            
+            # Loop through and generate cards for each question
+            for q in interview_data.get('questions', []):
+                st.markdown(f"""
+                <div class='zna-card'>
+                    <div class='validated-badge'>Q{q['number']} / Validated</div>
+                    <div class='prep-question'>{q['question']}</div>
+                    
+                    <div style="display: flex; gap: 5px; margin-top: 10px;">
+                        {' '.join([f"<span class='core-comp-tag'>{sanitize_text(comp)}</span>" for comp in q.get('competencies', [])])}
+                    </div>
+                    
+                    <div class='star-grid'>
+                        <div class='star-col'>
+                            <i class='fas fa-map-marker-alt star-icon'></i>
+                            <div class='star-title'>Situation</div>
+                            <div class='star-text'>{q['situation']}</div>
+                        </div>
+                        <div class='star-col'>
+                            <i class='fas fa-tasks star-icon'></i>
+                            <div class='star-title'>Task</div>
+                            <div class='star-text'>{q['task']}</div>
+                        </div>
+                        <div class='star-col'>
+                            <i class='fas fa-running star-icon'></i>
+                            <div class='star-title'>Action</div>
+                            <div class='star-text'>{q['action']}</div>
+                        </div>
+                        <div class='star-col'>
+                            <i class='fas fa-trophy star-icon'></i>
+                            <div class='star-title'>Result</div>
+                            <div class='star-text'>{q['result']}</div>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+            
+            # --- Generate the PDF and show the download button (outside the loop) ---
+            # Create a simple text version of the data for the PDF
+            pdf_text_content = ""
+            for q in interview_data.get('questions', []):
+                pdf_text_content += f"Q{q['number']}: {q['question']}\nCOMPETENCIES: {', '.join(q.get('competencies', []))}\nSITUATION: {q['situation']}\nTASK: {q['task']}\nACTION: {q['action']}\nRESULT: {q['result']}\n\n"
+            
+            prep_pdf = create_professional_pdf(pdf_text_content, title=f"Interview Prep - {st.session_state['user_name']}")
+            st.download_button("📥 Download Prep Sheet (PDF)", data=prep_pdf, file_name=f"Interview_Prep_{st.session_state['user_name'].replace(' ', '_')}.pdf", mime="application/pdf", type="primary")
 
+        else:
+            st.markdown("<div class='zna-card' style='text-align: center; color: #30363d; padding: 60px 0;'><i class='fas fa-user-tie fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>READY TO PREPARE...</div><div style='font-size: 12px; color: #64748b; margin-top: 10px;'>Click 'Generate Mock Interview' to begin.</div></div>", unsafe_allow_html=True)
+
+# --- NEW FEATURE: SKILL GAP ANALYZER ---
 elif app_mode == "🗺️ Skill Gap Analyzer":
     st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
     st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-map-marked-alt' style='color: #10b981; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Skill Gap & Roadmap</h2></div>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>Discover what's missing and get a custom 4-week learning plan.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>Discover what's missing and get a visual, custom 4-week learning roadmap.</p>", unsafe_allow_html=True)
 
     if not st.session_state['resume_text']:
         st.error("⚠️ Missing Profile Context! Please build your resume in the 'Resume Builder' tab first.")
     else:
-        col1, col2 = st.columns([0.4, 0.6])
+        # --- INPUT OPTIONS CARD ---
+        st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>TARGET DESTINATION</div>", unsafe_allow_html=True)
+        col1, col2 = st.columns([0.7, 0.3])
         with col1:
-            st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>TARGET DESTINATION</div>", unsafe_allow_html=True)
             dream_job = st.text_input("Your Dream Job / Next Role *", placeholder="e.g. Senior Data Scientist, Product Manager")
-            
-            if st.button("🗺️ Generate Learning Roadmap", type="primary"):
+        with col2:
+            st.markdown("<div style='padding-top:28px;'></div>", unsafe_allow_html=True)
+            if st.button("🗺️ Generate Visual Roadmap", type="primary"):
                 if dream_job:
                     with st.spinner(f"Analyzing gap for {dream_job}..."):
+                        # New strict prompt for JSON output
                         prompt = f"""
                         Act as an Expert Career Coach and Technical Mentor.
-                        
-                        Candidate's Current Resume:
-                        {st.session_state['resume_text']}
-                        
+                        Candidate's Current Resume: {st.session_state['resume_text']}
                         Target Dream Job: {dream_job}
                         
-                        Please provide:
-                        1. MISSING SKILLS: Identify the top 3-5 crucial skills (technical or soft) required for the dream job that are currently missing or weak in the resume.
-                        2. 4-WEEK ROADMAP: Create a realistic, structured 4-week learning roadmap to help the candidate acquire these specific missing skills. Include actionable weekly goals or project ideas.
-                        
-                        Format cleanly with plain text and bullet points. Do not use markdown code blocks.
+                        Please analyze the gap and output a raw JSON object (no markdown code blocks) with this format:
+                        {{
+                            "missing_skills": ["Skill 1", "Skill 2", "Skill 3"],
+                            "learning_roadmap": [
+                                {{
+                                    "week_number": 1,
+                                    "goal": "Weekly goal title",
+                                    "action_items": ["Action 1", "Action 2"],
+                                    "milestone_project_title": "Project Title",
+                                    "milestone_project_desc": "Brief project description"
+                                }}
+                            ]
+                        }}
+                        Return 4 weeks in the roadmap.
                         """
-                        st.session_state['roadmap_output'] = get_gemini_response(prompt)
+                        json_response = get_gemini_response(prompt, json_mode=True)
+                        try:
+                            st.session_state['skill_gap_data'] = json.loads(json_response)
+                        except Exception as e:
+                            st.error(f"⚠️ Error parsing AI response. It might not be in valid JSON format. Raw output: {json_response[:200]}...")
                 else:
                     st.error("⚠️ Please enter your Target Dream Job.")
-            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
             
-        with col2:
-            st.markdown("<div class='zna-card' style='height: 100%; min-height: 400px;'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>CUSTOM ROADMAP</div>", unsafe_allow_html=True)
-            if 'roadmap_output' in st.session_state:
-                st.text_area("", value=st.session_state['roadmap_output'], height=450, label_visibility="collapsed")
-                
-                roadmap_pdf = create_professional_pdf(st.session_state['roadmap_output'], title=f"Learning Roadmap - {st.session_state['user_name']}")
-                st.download_button("📥 Download Roadmap (PDF)", data=roadmap_pdf, file_name=f"Roadmap_{st.session_state['user_name'].replace(' ', '_')}.pdf", mime="application/pdf", type="primary")
-            else:
-                st.markdown("<div style='text-align: center; color: #30363d; margin-top: 100px;'><i class='fas fa-compass fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>AWAITING DESTINATION...</div></div>", unsafe_allow_html=True)
+        # --- OUTPUT VISUALIZATION ---
+        if 'skill_gap_data' in st.session_state:
+            gap_data = st.session_state['skill_gap_data']
+            
+            st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>IDENTIFIED GAPS</div>", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div style="display: flex; gap: 5px;">
+                    {' '.join([f"<span class='missing-skill-tag'>{sanitize_text(skill)}</span>" for skill in gap_data.get('missing_skills', [])])}
+                </div>
+            """, unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
+
+            # --- Visual Timeline & Roadmap Content ---
+            st.markdown("<div class='zna-card'>", unsafe_allow_html=True)
+            st.markdown("<div class='gap-analyzer-grid'>", unsafe_allow_html=True)
+            
+            # 1. Timeline Bar (Left side)
+            st.markdown("<div class='roadmap-timeline-bar'></div>", unsafe_allow_html=True)
+            
+            # 2. Weekly Cards (Right side)
+            st.markdown("<div class='roadmap-content'>", unsafe_allow_html=True)
+            
+            # Create a simplified text version of the data for the PDF (to be generated at the end)
+            pdf_roadmap_text = "MISSING SKILLS:\n" + ', '.join(gap_data.get('missing_skills', [])) + "\n\n"
+
+            for week in gap_data.get('learning_roadmap', []):
+                
+                # HTML and CSS for each week's card
+                st.markdown(f"""
+                <div class='roadmap-week-card'>
+                    <div class='roadmap-header'>
+                        <div class='roadmap-number'>{week['week_number']}</div>
+                        <div class='roadmap-goal'>{sanitize_text(week['goal'])}</div>
+                    </div>
+                    
+                    <ul class='roadmap-task-list'>
+                        {' '.join([f"<li><i class='fas fa-check-circle'></i> {sanitize_text(item)}</li>" for item in week.get('action_items', [])])}
+                    </ul>
+                    
+                    <div class='roadmap-project'>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <div class='roadmap-project-title'>{sanitize_text(week['milestone_project_title'])}</div>
+                            <span class='completed-badge'>Completed</span>
+                        </div>
+                        <div class='roadmap-project-desc'>{sanitize_text(week['milestone_project_desc'])}</div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Add content to the simplified PDF text version
+                pdf_roadmap_text += f"WEEK {week['week_number']}: {week['goal']}\nACTION ITEMS:\n - " + '\n - '.join(week.get('action_items', [])) + f"\nMILESTONE PROJECT:\nTitle: {week['milestone_project_title']}\nDescription: {week['milestone_project_desc']}\n\n"
+            
+            st.markdown("</div>", unsafe_allow_html=True) # End roadmap-content
+            st.markdown("</div>", unsafe_allow_html=True) # End gap-analyzer-grid
+            
+            # --- Generate the PDF and show the download button (outside the grid) ---
+            roadmap_pdf = create_professional_pdf(pdf_roadmap_text, title=f"Learning Roadmap - {st.session_state['user_name']}")
+            st.download_button("📥 Download Roadmap (PDF)", data=roadmap_pdf, file_name=f"Roadmap_{st.session_state['user_name'].replace(' ', '_')}.pdf", mime="application/pdf", type="primary")
+
+            st.markdown("</div>", unsafe_allow_html=True) # End zna-card
+
+        else:
+            st.markdown("<div class='zna-card' style='text-align: center; color: #30363d; padding: 60px 0;'><i class='fas fa-compass fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>AWAITING DESTINATION...</div><div style='font-size: 12px; color: #64748b; margin-top: 10px;'>Enter your Target Dream Job and click 'Generate Visual Roadmap' to begin.</div></div>", unsafe_allow_html=True)
