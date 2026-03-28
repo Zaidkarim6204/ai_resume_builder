@@ -236,7 +236,7 @@ with st.sidebar:
             <a href="https://in.indeed.com/jobs?q={indeed_query}" target="_blank" class="side-job-portal" style="background: #2557a7; color: white !important; border: none;">
                 <i class="fas fa-info-circle" style="margin-right: 8px;"></i> Indeed ↗
             </a>
-            <a href="https://www.naukri.com/{naukri_query}-jobs" target="_blank" class="side-job-portal" style="background: #ffffff; color: #121224 !important; border: none;">
+            <a href="https://www.naukri.com/{naukri_query}-jobs" target="_blank" class="side-job-portal" style="background: #0075ff; color: #121224 !important; border: none;">
                 <i class="fas fa-briefcase" style="margin-right: 8px;"></i> Naukri ↗
             </a>
         </div>
