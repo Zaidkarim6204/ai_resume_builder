@@ -7,7 +7,7 @@ import pandas as pd
 from dotenv import load_dotenv
 
 # --- 1. CONFIGURATION ---
-st.set_page_config(page_title="AI Studio | ZNA Career Architect", page_icon="🏗️", layout="wide")
+st.set_page_config(page_title="Elite Studio | AI Career Architect", page_icon="⚡", layout="wide")
 
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
@@ -19,182 +19,123 @@ if not api_key:
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-flash-latest')
 
-# --- 2. PREMIUM SaaS CSS STYLING ---
+# --- 2. ELITE STUDIO PREMIUM CSS STYLING ---
 st.markdown("""
 <style>
-    /* 1. Import ZNA Landing Page Font */
+    /* Import Fonts and Icons */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
     
-    /* Apply Inter font globally, but strictly exclude Streamlit's icon classes */
     html, body, p, span:not(.material-symbols-rounded):not([data-testid="stIconMaterial"]), div, h1, h2, h3, h4, h5, h6, label {
         font-family: 'Inter', sans-serif !important;
     }
     
-    /* FORCE fix the arrow_right text glitch on Expanders */
     .material-symbols-rounded, [data-testid="stIconMaterial"] {
         font-family: 'Material Symbols Rounded' !important;
     }
 
-    /* 2. Sleek Dark App Background */
-    .stApp { 
-        background-color: #0b0f19; 
-        color: #f0f6fc; 
-    }
+    /* Theme & Backgrounds */
+    .stApp { background-color: #050814; color: #f0f6fc; }
     .block-container { padding-top: 1rem; padding-bottom: 0rem; }
     
-    /* 3. Streamlit Default Widget Overrides for Dark Mode */
     .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stSelectbox>div>div>div {
-        background-color: #161b22 !important;
+        background-color: #0f1524 !important;
         color: #f0f6fc !important;
-        border: 1px solid #30363d !important;
-        border-radius: 8px !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 10px !important;
+        transition: all 0.3s ease;
     }
     .stTextInput>div>div>input:focus, .stTextArea>div>div>textarea:focus {
-        border-color: #1f6feb !important;
-        box-shadow: 0 0 0 1px #1f6feb !important;
-    }
-    .stAlert {
-        border-radius: 10px !important;
-        border: 1px solid #30363d !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
     }
     
-    /* Global class for the card containers used throughout the dashboard */
+    /* Elite Custom Cards */
     .zna-card {
-        background-color: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 12px;
+        background: linear-gradient(145deg, #0f172a 0%, #0a0f1d 100%);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
         padding: 24px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         margin-bottom: 24px;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .zna-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(59, 130, 246, 0.3);
     }
 
-    /* 4. The ZNA Dark Blue Sidebar */
+    /* Sidebar Styling */
     [data-testid="stSidebar"] {
-        background-color: #0b1c3e !important;
-        border-right: 1px solid #1c2e5a;
+        background-color: #050814 !important;
+        border-right: 1px solid #1e293b;
         width: 300px !important;
     }
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] span:not(.material-symbols-rounded), [data-testid="stSidebar"] label {
-        color: #f0f6fc !important;
+        color: #94a3b8 !important;
     }
-    
-    /* Sidebar Headers Styling */
-    .sidebar-header { color: #8b949e; font-size: 11px; font-weight: 700; text-transform: uppercase; margin: 30px 0 15px 15px; letter-spacing: 1px;}
+    .sidebar-header { color: #475569; font-size: 11px; font-weight: 700; text-transform: uppercase; margin: 30px 0 15px 15px; letter-spacing: 1.5px;}
 
-    /* Radio Navigation Menu Custom Styling */
     .stRadio [data-testid="stMarkdownContainer"] {
         background-color: transparent !important;
-        color: #acb6c0 !important;
+        color: #94a3b8 !important;
         font-size: 14px !important;
-        border-radius: 8px !important;
-        padding: 10px 15px !important;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        transition: all 0.3s ease;
+        font-weight: 500 !important;
+        border-radius: 10px !important;
+        padding: 12px 15px !important;
+        display: flex; align-items: center; gap: 12px; transition: all 0.2s ease;
     }
-    
-    /* Hover effect for the menu items */
-    .stRadio label:hover [data-testid="stMarkdownContainer"] { background-color: #1a2f5c !important; color: #ffffff !important;}
-    
-    /* Selected menu item styling */
+    .stRadio label:hover [data-testid="stMarkdownContainer"] { background-color: #0f172a !important; color: #e2e8f0 !important;}
     .stRadio label[data-selected="true"] [data-testid="stMarkdownContainer"] {
-        background-color: #1f6feb !important;
+        background: linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%) !important;
+        border-left: 3px solid #3b82f6 !important;
         color: #ffffff !important;
-        box-shadow: 0 2px 8px rgba(31, 111, 235, 0.3) !important;
+        font-weight: 600 !important;
     }
 
-    /* Side Job Portal Button styling to look premium */
-    .side-job-portal {
-        background-color: #1f6feb;
-        border-radius: 8px;
-        color: white !important;
-        text-align: center;
-        padding: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        display: inline-block;
-        width: 100%;
-        margin-top: 15px;
-        text-decoration: none;
-        transition: all 0.3s ease;
+    /* Live Pulse Animation */
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+        70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
     }
-    .side-job-portal:hover {
-        background-color: #2ea043; /* Green on hover like a success/ready action */
-        box-shadow: 0 2px 8px rgba(46, 160, 67, 0.4);
+    .live-pulse {
+        display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+        background-color: #22c55e; animation: pulse-green 2s infinite; margin-left: 6px;
+    }
+    .status-badge {
+        background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2);
+        color: #22c55e; padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700;
+        text-transform: uppercase; display: inline-flex; align-items: center; letter-spacing: 0.5px;
     }
 
-    /* 5. Pill-Shaped Glowing Buttons */
+    /* Buttons & Links */
     .stButton>button {
         border-radius: 50px !important;
-        background-color: #1f6feb !important;
-        color: white !important;
-        font-weight: 700 !important;
-        font-size: 14px !important;
-        padding: 12px 24px !important;
-        border: none !important;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(31, 111, 235, 0.2) !important;
+        background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%) !important;
+        color: white !important; font-weight: 600 !important; font-size: 14px !important;
+        padding: 12px 28px !important; border: none !important; transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
     }
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(31, 111, 235, 0.4) !important;
+        transform: translateY(-2px); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4) !important;
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
     }
-    
-    /* Target Generate narratives button specifically */
-    .cl-gen-narratives .stButton>button {
-        background-color: #7d49ee !important;
-        box-shadow: 0 4px 6px rgba(125, 73, 238, 0.2) !important;
+    .side-job-portal {
+        background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; color: #e2e8f0 !important;
+        text-align: center; padding: 14px; font-weight: 600; cursor: pointer; display: inline-block;
+        width: 100%; margin-top: 10px; text-decoration: none; transition: all 0.3s ease; font-size: 13px;
     }
-    .cl-gen-narratives .stButton>button:hover {
-        box-shadow: 0 6px 12px rgba(125, 73, 238, 0.4) !important;
-    }
+    .side-job-portal:hover { border-color: #3b82f6; color: #ffffff !important; box-shadow: 0 0 15px rgba(59,130,246,0.1); }
 
-    /* 6. modern metric cards (Replacing the boxy st.metric) */
-    .zna-metric-card {
-        background-color: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 10px;
-        padding: 18px;
-        text-align: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .zna-metric-label { font-size: 12px; color: #94a3b8; font-weight: 500; }
-    .zna-metric-value { font-size: 24px; font-weight: 700; color: #f0f6fc; }
-    .zna-metric-status { font-size: 10px; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-top: 8px; }
-    .status-active { background-color: #2ea043; color: white; }
-    .status-ready { background-color: #1f6feb; color: white; }
-    .status-online { background-color: #8957e5; color: white; }
-
-    /* 7. Beautiful Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        background-color: transparent !important;
-        border-bottom: 2px solid #30363d !important;
-    }
-    .stTabs [data-baseweb="tab"] {
-        color: #57606a !important;
-        font-weight: 600 !important;
-        height: 50px;
-    }
-    .stTabs [aria-selected="true"] {
-        color: #1f6feb !important;
-        border-bottom-color: #1f6feb !important;
-        background-color: rgba(31, 111, 235, 0.05) !important;
-    }
-
-    /* 8. Modern Step Indicator for Resume Builder */
-    .zna-steps { display: flex; justify-content: space-around; margin-bottom: 30px; }
-    .zna-step-node { display: flex; flex-direction: column; align-items: center; text-align: center; width: 33%; position: relative; }
-    .zna-step-node::after { content: ''; position: absolute; height: 2px; background: #30363d; width: 100%; top: 15px; left: 50%; z-index: 0; }
-    .zna-step-node:last-child::after { display: none; }
-    
-    .zna-step-circle { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #1f6feb; background: #0d1117; color: #1f6feb; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; position: relative; z-index: 1; margin-bottom: 8px; }
-    .step-active .zna-step-circle { background-color: #1f6feb; color: white; border-color: #1f6feb; }
-    .step-active::after { background: #1f6feb; }
-    .step-inactive .zna-step-circle { color: #57606a; border-color: #30363d; }
-    
-    .zna-step-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #57606a; }
-    .step-active .zna-step-label { color: #f0f6fc; }
+    /* Steps UI */
+    .zna-steps { display: flex; justify-content: space-around; margin-bottom: 30px; position: relative; }
+    .zna-step-node { display: flex; flex-direction: column; align-items: center; width: 33%; position: relative; z-index: 2; }
+    .zna-steps::before { content: ''; position: absolute; height: 2px; background: #1e293b; width: 66%; top: 16px; left: 17%; z-index: 1; }
+    .zna-step-circle { width: 34px; height: 34px; border-radius: 50%; background: #0f1524; border: 2px solid #1e293b; color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; margin-bottom: 10px; transition: all 0.3s ease; }
+    .step-active .zna-step-circle { background: #3b82f6; border-color: #3b82f6; color: white; box-shadow: 0 0 15px rgba(59,130,246,0.4); }
+    .zna-step-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
+    .step-active .zna-step-label { color: #f8fafc; }
     
 </style>
 """, unsafe_allow_html=True)
@@ -209,21 +150,16 @@ def get_gemini_response(prompt):
 def sanitize_text(text):
     return text.encode('latin-1', 'ignore').decode('latin-1')
 
-# Phone, LinkedIn, and GitHub parameters for clickable links
 def create_professional_pdf(text_content, title="Document", email="", phone="", linkedin="", github=""):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
-    
-    # Header Title (Name)
     pdf.set_font("Arial", 'B', 16)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 10, txt=title, ln=True, align='C')
-    
-    # Clickable Contact Links
     pdf.set_font("Arial", size=10)
     if email:
-        pdf.set_text_color(0, 102, 204) # Blue link color
+        pdf.set_text_color(0, 102, 204)
         pdf.cell(0, 5, txt=f"Email: {sanitize_text(email)}", ln=True, align='C', link=f"mailto:{email}")
     if phone:
         pdf.set_text_color(0, 102, 204)
@@ -234,12 +170,9 @@ def create_professional_pdf(text_content, title="Document", email="", phone="", 
     if github:
         pdf.set_text_color(0, 102, 204)
         pdf.cell(0, 5, txt="GitHub Portfolio", ln=True, align='C', link=github)
-        
-    pdf.set_text_color(0, 0, 0) # Reset back to black text for body
+    pdf.set_text_color(0, 0, 0)
     pdf.line(10, pdf.get_y()+2, 200, pdf.get_y()+2)
     pdf.ln(8)
-    
-    # Body
     pdf.set_font("Arial", size=11)
     for line in text_content.split('\n'):
         clean_line = sanitize_text(line)
@@ -250,139 +183,108 @@ def create_professional_pdf(text_content, title="Document", email="", phone="", 
             pdf.set_font("Arial", size=11)
         else:
             pdf.multi_cell(0, 6, txt=clean_line)
-            
     return pdf.output(dest='S').encode('latin-1')
 
 # --- 4. SESSION STATE INITIALIZATION ---
 if 'resume_text' not in st.session_state: st.session_state['resume_text'] = ""
 if 'target_job' not in st.session_state: st.session_state['target_job'] = ""
-
-# Store the contact details so they can be passed to the PDF later
 if 'user_name' not in st.session_state: st.session_state['user_name'] = "Professional Resume"
 if 'user_email' not in st.session_state: st.session_state['user_email'] = ""
 if 'user_phone' not in st.session_state: st.session_state['user_phone'] = ""
 if 'user_linkedin' not in st.session_state: st.session_state['user_linkedin'] = ""
 if 'user_github' not in st.session_state: st.session_state['user_github'] = ""
 
-# --- 5. SIDEBAR NAVIGATION & LINKEDIN PORTAL ---
+# --- 5. SIDEBAR NAVIGATION ---
 with st.sidebar:
-    # Sleek ZNA logo at the top
     st.markdown("""
-        <svg width="240" height="80" viewBox="0 0 350 110" xmlns="http://www.w3.org/2000/svg">
-            <path d="M40 20 L110 20 L40 85 L110 85" fill="none" stroke="#4a90e2" stroke-width="15" stroke-linejoin="bevel"/>
-            <path d="M125 85 L125 20 L185 85 L185 20" fill="none" stroke="#4a90e2" stroke-width="15" stroke-linejoin="bevel"/>
-            <path d="M200 85 L235 20 L270 85" stroke="#4a90e2" stroke-width="15" fill="none"/>
-            <path d="M215 65 Q250 55 285 35" stroke="#4a90e2" stroke-width="8" fill="none" stroke-linecap="round"/>
-            <path d="M275 35 L285 35 L285 45" stroke="#4a90e2" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-            <text x="40" y="105" font-family="'Inter', sans-serif" font-weight="700" font-size="18" fill="#acb6c0" letter-spacing="1">AI STUDIO</text>
-        </svg>
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 30px;">
+            <div style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 20px; box-shadow: 0 4px 10px rgba(59,130,246,0.3);">Z</div>
+            <div style="font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: white;">Elite Studio</div>
+        </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("<div class='sidebar-header'>Navigate Workspace:</div>", unsafe_allow_html=True)
-    
+    st.markdown("<div class='sidebar-header'>Workspace</div>", unsafe_allow_html=True)
     app_mode = st.radio("", [
-        "📊 Overview Dashboard", 
-        "📋 Smart Resume Builder", 
-        "✉️ Cover Letter Generator", 
-        "🔍 ATS Match Engine"
+        "📊 Dashboard", 
+        "📄 Resume Builder", 
+        "✉️ Letter Engine", 
+        "🔍 ATS Scanner",
+        "🎙️ Interview Prep",
+        "🗺️ Skill Gap Analyzer" # <-- BRAND NEW FEATURE
     ])
     st.markdown("---")
     
-    # Dynamic LinkedIn Direct Apply Portal
-    st.markdown("<div class='sidebar-header'>Job Portal:</div>", unsafe_allow_html=True)
+    st.markdown("""
+        <div style='background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; margin-top: 20px;'>
+            <div style='font-size: 11px; font-weight: 700; color: #3b82f6; text-transform: uppercase; margin-bottom: 8px;'>PRO WORKSPACE</div>
+            <div style='font-size: 12px; color: #64748b; line-height: 1.5;'>Personalize your profile to unlock job-specific insights.</div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("<div class='sidebar-header'>🌐 Direct Apply Portals</div>", unsafe_allow_html=True)
+    
     if st.session_state['target_job']:
-        job_query = urllib.parse.quote(st.session_state['target_job'])
+        linkedin_query = urllib.parse.quote(st.session_state['target_job'])
+        indeed_query = urllib.parse.quote(st.session_state['target_job'])
+        naukri_query = st.session_state['target_job'].replace(' ', '-').lower()
+        
         st.markdown(f"""
-        <a href="https://www.linkedin.com/jobs/search/?keywords={job_query}" target="_blank" class="side-job-portal">
-            Apply on LinkedIn ↗
-        </a>
+        <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 10px;">
+            <a href="https://www.linkedin.com/jobs/search/?keywords={linkedin_query}" target="_blank" class="side-job-portal" style="background: #0a66c2; color: white !important; border: none;">
+                <i class="fab fa-linkedin" style="margin-right: 8px;"></i> LinkedIn ↗
+            </a>
+            <a href="https://in.indeed.com/jobs?q={indeed_query}" target="_blank" class="side-job-portal" style="background: #2557a7; color: white !important; border: none;">
+                <i class="fas fa-info-circle" style="margin-right: 8px;"></i> Indeed ↗
+            </a>
+            <a href="https://www.naukri.com/{naukri_query}-jobs" target="_blank" class="side-job-portal" style="background: #ffffff; color: #121224 !important; border: none;">
+                <i class="fas fa-briefcase" style="margin-right: 8px;"></i> Naukri ↗
+            </a>
+        </div>
         """, unsafe_allow_html=True)
-        st.caption(f"Searching for: **{st.session_state['target_job']}**")
+        st.caption(f"Searching roles for: **{st.session_state['target_job']}**")
     else:
-        st.info("💡 Fill out the 'Target Job Title' in the Resume Builder to unlock the LinkedIn Job Portal.")
+        st.info("💡 Fill out the 'Target Role' in the Resume Builder to unlock live Job Portals.")
 
 # --- 6. MAIN APP LOGIC ---
 
-if app_mode == "📊 Overview Dashboard":
-    st.markdown("<div style='float: right; margin-top: -5px;'><span class='zna-metric-status' style='background: rgba(46, 160, 67, 0.1); color: #2ea043; border: 1px solid rgba(46, 160, 67, 0.3);'>Gemini 2.5 Flash Active 🟢</span></div>", unsafe_allow_html=True)
-    st.markdown("<h3>Welcome to your Career Workspace</h3>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #acb6c0; margin-bottom: 24px; font-size: 14px;'>Your central hub for AI-powered career growth and optimization.</p>", unsafe_allow_html=True)
+if app_mode == "📊 Dashboard":
+    st.markdown("<div style='float: right;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
+    st.markdown("<h2 style='font-size: 32px; font-weight: 800; margin-bottom: 5px;'>Welcome to your Career Workspace</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px;'>Your central hub for AI-powered career growth and optimization.</p>", unsafe_allow_html=True)
 
-    # Top Metrics - HTML cards
     col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown("""
-            <div class='zna-metric-card'>
-                <div class='zna-metric-label'>Dynamic Templates</div>
-                <div class='zna-metric-value'>3 Styles</div>
-                <div class='zna-metric-status status-active'>ACTIVE</div>
-            </div>
-        """, unsafe_allow_html=True)
-    with col2:
-        st.markdown("""
-            <div class='zna-metric-card'>
-                <div class='zna-metric-label'>Input Modes</div>
-                <div class='zna-metric-value'>Dual (Auto/Manual)</div>
-                <div class='zna-metric-status status-ready'>READY</div>
-            </div>
-        """, unsafe_allow_html=True)
-    with col3:
-        st.markdown("""
-            <div class='zna-metric-card'>
-                <div class='zna-metric-label'>Cover Letters</div>
-                <div class='zna-metric-value'>Auto-Gen</div>
-                <div class='zna-metric-status status-online'>READY</div>
-            </div>
-        """, unsafe_allow_html=True)
-    with col4:
-        st.markdown("""
-            <div class='zna-metric-card'>
-                <div class='zna-metric-label'>ATS Scanner</div>
-                <div class='zna-metric-value'>Semantic NLP</div>
-                <div class='zna-metric-status status-online'>ONLINE</div>
-            </div>
-        """, unsafe_allow_html=True)
+    with col1: st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>TEMPLATES</div><div style='font-size:24px; font-weight:bold; margin-top:5px;'>3 Styles</div></div>", unsafe_allow_html=True)
+    with col2: st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>INPUT MODES</div><div style='font-size:24px; font-weight:bold; margin-top:5px;'>Dual Auth</div></div>", unsafe_allow_html=True)
+    with col3: st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>INTERVIEW AI</div><div style='font-size:24px; font-weight:bold; margin-top:5px;'>Active</div></div>", unsafe_allow_html=True)
+    with col4: st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>ATS SCANNER</div><div style='font-size:24px; font-weight:bold; margin-top:5px;'>Semantic</div></div>", unsafe_allow_html=True)
     
-    st.markdown("---")
-    
-    # Interactive Split Layout
-    dash_col1, dash_col2 = st.columns([0.6, 0.4])
-    
+    dash_col1, dash_col2 = st.columns([0.65, 0.35])
     with dash_col1:
-        st.markdown("<div class='zna-card'><div style='font-size: 14px; font-weight: 700; color: #1f6feb; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;'>📊 ATS Optimization Trends</div><p style='color: #acb6c0; font-size: 12px;'>Average Match Score (%)</p></div>", unsafe_allow_html=True)
-        chart_data = pd.DataFrame(
-            [65, 72, 68, 85, 88, 92, 96],
-            columns=["ATS Match Score (%)"]
-        )
-        st.line_chart(chart_data, color="#1f6feb")
-        
-        st.markdown("### 🚀 Quick Start Guide")
-        with st.expander("📝 1. How to build your first resume?"):
-            st.write("Navigate to the **Smart Resume Builder** in the sidebar. You can either paste your raw LinkedIn data for the AI to auto-parse, or fill out the structured manual forms for more precision.")
-        with st.expander("🔍 2. How does the ATS Scanner work?"):
-            st.write("The scanner uses Google Gemini's Semantic NLP to compare your generated resume text directly against a Job Description to find missing keywords and calculate a match probability.")
+        st.markdown("<div class='zna-card'><div style='font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;'><i class='fas fa-chart-area' style='color:#3b82f6;'></i> ATS Optimization Trends</div>", unsafe_allow_html=True)
+        chart_data = pd.DataFrame([65, 72, 68, 85, 88, 92, 96], columns=["Match Score (%)"])
+        st.line_chart(chart_data, color="#3b82f6")
+        st.markdown("</div>", unsafe_allow_html=True)
 
     with dash_col2:
-        st.markdown("<div class='zna-card'><div style='font-size: 14px; font-weight: 700; color: #acb6c0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;'>⚡ Live System Logs</div></div>", unsafe_allow_html=True)
-        st.success("✅ **[System]** LLM Engine connected to Gemini 2.0 Flash.")
-        st.info("ℹ️ **[Module]** PDF Generation engine ready.")
-        
+        st.markdown("<div class='zna-card' style='height: 100%;'><div style='font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;'><i class='fas fa-terminal' style='color:#8b5cf6;'></i> Live System Logs</div>", unsafe_allow_html=True)
+        st.info("✅ **[SYSTEM]** LLM Engine connected.")
         if st.session_state['resume_text']:
-            st.success("✅ **[Memory]** User resume loaded in active session.")
+            st.success("✅ **[MEMORY]** Profile loaded securely.")
         else:
-            st.warning("⏳ **[Memory]** Waiting for user to generate a resume...")
-            
+            st.warning("⏳ **[MEMORY]** Awaiting user input...")
         if st.session_state['target_job']:
-            st.info(f"🎯 **[Target]** Job set to: {st.session_state['target_job']}")
+            st.info(f"🎯 **[TARGET]** {st.session_state['target_job']}")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-elif app_mode == "📋 Smart Resume Builder":
-    st.markdown("<div style='float: right; margin-top: -5px;'><span class='zna-metric-status' style='background: rgba(46, 160, 67, 0.1); color: #2ea043; border: 1px solid rgba(46, 160, 67, 0.3);'>Gemini 2.5 Flash Active 🟢</span></div>", unsafe_allow_html=True)
-    st.markdown("<h3>Smart Resume Builder</h3>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #acb6c0; margin-bottom: 24px; font-size: 14px;'>AI-powered synthesis of your professional data.</p>", unsafe_allow_html=True)
+elif app_mode == "📄 Resume Builder":
+    st.markdown("<div style='float: right;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-microchip' style='color: #3b82f6; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Smart Resume Builder</h2></div>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>AI-powered synthesis of your professional data.</p>", unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["📋 1. Setup & Data Input", "📄 2. AI Output & Export"])
+    tab1, tab2 = st.tabs(["📋 Setup & Context", "📄 Synthesis Output"])
     
     with tab1:
+        st.markdown("<div class='zna-card'>", unsafe_allow_html=True)
         st.markdown("""
             <div class='zna-steps'>
                 <div class='zna-step-node step-active'><div class='zna-step-circle'>1</div><div class='zna-step-label'>Context</div></div>
@@ -391,251 +293,220 @@ elif app_mode == "📋 Smart Resume Builder":
             </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("<div class='zna-card' style='padding-top: 15px; font-size: 14px; color: #acb6c0;'>TARGET CAREER PATH:<br><span style='color: #6a737d;'>e.g. Computer Science Engineering Student</span></div>", unsafe_allow_html=True)
+        style = st.selectbox("Select Template Architecture:", ["Standard Corporate", "Executive & Leadership", "Creative & Tech", "Academic & Research"])
+        input_method = st.radio("Data Injection Mode:", ["⚡ Auto-Parse (Raw Data)", "✍️ Manual Entry (Structured)"], horizontal=True)
         
-        st.markdown("### ⚙️ Template Settings")
-        style = st.selectbox(
-            "Select Professional Template Style:", 
-            ["Standard Corporate", "Executive & Leadership", "Creative & Tech", "Academic & Research"]
-        )
-        st.markdown("---")
-        
-        # --- DUAL INPUT TOGGLE ---
-        st.markdown("### 📥 Choose Data Input Method")
-        input_method = st.radio(
-            "How do you want to provide your details?",
-            ["⚡ Auto-Parse (Paste LinkedIn/Resume Data)", "✍️ Manual Entry (Fill Structured Form)"],
-            horizontal=True
-        )
-        st.markdown("---")
-        
-        # --- MODE 1: AUTO-PARSE ---
-        if input_method == "⚡ Auto-Parse (Paste LinkedIn/Resume Data)":
-            st.info("💡 **Fast-Import:** Skip the typing! Copy your entire LinkedIn profile or old resume text and paste it below. The AI will extract and organize it automatically.")
-            
+        if input_method == "⚡ Auto-Parse (Raw Data)":
             col_a, col_b = st.columns(2)
             with col_a:
-                auto_name = st.text_input("Full Name *", key="auto_name", placeholder="e.g. Syed Zaid Karim")
-                auto_email = st.text_input("Email (for PDF links)", key="auto_email")
-                auto_github = st.text_input("GitHub URL (for PDF links)", key="auto_github")
+                auto_name = st.text_input("Full Name *", key="auto_name")
+                auto_email = st.text_input("Email", key="auto_email")
+                auto_github = st.text_input("GitHub URL", key="auto_github")
             with col_b:
-                auto_target = st.text_input("Target Job Title *", key="auto_target", placeholder="e.g. Computer Science Engineering Student")
-                auto_phone = st.text_input("Phone Number (for PDF links)", key="auto_phone")
-                auto_linkedin = st.text_input("LinkedIn URL (for PDF links)", key="auto_linkedin")
+                auto_target = st.text_input("Target Role *", key="auto_target")
+                auto_phone = st.text_input("Phone Number", key="auto_phone")
+                auto_linkedin = st.text_input("LinkedIn URL", key="auto_linkedin")
                 
-            raw_data = st.text_area("Raw Experience / Education / LinkedIn Data *", height=200, placeholder="Paste your raw text here...")
+            raw_data = st.text_area("Raw Profile Data *", height=200)
             
-            if st.button("✨ Auto-Generate AI Resume", type="primary"):
+            if st.button("Initialize Synthesis", type="primary"):
                 if auto_name and auto_target and raw_data:
-                    st.session_state['target_job'] = auto_target
-                    st.session_state['user_name'] = auto_name
-                    st.session_state['user_email'] = auto_email
-                    st.session_state['user_phone'] = auto_phone
-                    st.session_state['user_linkedin'] = auto_linkedin
-                    st.session_state['user_github'] = auto_github
+                    st.session_state['target_job'], st.session_state['user_name'] = auto_target, auto_name
+                    st.session_state['user_email'], st.session_state['user_phone'] = auto_email, auto_phone
+                    st.session_state['user_linkedin'], st.session_state['user_github'] = auto_linkedin, auto_github
                     
-                    with st.spinner(f"Parsing raw data and applying {style} formatting..."):
-                        prompt = f"""
-                        Act as an expert Resume Writer and Career Coach. Create a professional resume using this style format: {style}.
-                        USER DATA:
-                        Target Role: {auto_target}
-                        Raw Data (Parse this carefully): {raw_data}
-                        RULES:
-                        - Create a compelling "PROFESSIONAL SUMMARY" at the top.
-                        - DO NOT write the contact info (Name, email, phone, links) at the top. The PDF compiler will handle it.
-                        - Organize into clear, UPPERCASE sections (EXPERIENCE, EDUCATION, SKILLS, PROJECTS).
-                        - Filter out irrelevant clutter. Extract only professional achievements.
-                        - Expand rough notes into professional bullet points using action verbs.
-                        - Do NOT use markdown code blocks (```). Return ONLY plain text.
-                        """
+                    with st.spinner("Synthesizing..."):
+                        prompt = f"Act as an expert Resume Writer. Style: {style}. Target Role: {auto_target}. Raw Data: {raw_data}. RULES: Create a PROFESSIONAL SUMMARY. DO NOT write contact info at the top. Organize into UPPERCASE sections. Return ONLY plain text."
                         st.session_state['resume_text'] = get_gemini_response(prompt)
-                        st.success("✅ Resume successfully built! Go to 'Tab 2' to view, edit, and download.")
-                else:
-                    st.error("⚠️ Please fill in Name, Target Job, and paste your raw data.")
-
-        # --- MODE 2: MANUAL ENTRY ---
+                        st.success("✅ Synthesis Complete! View output in Tab 2.")
+                else: st.error("⚠️ Incomplete Context Parameters.")
         else:
-            st.info("💡 **Structured Input:** Fill in the fields below to ensure specific details are highlighted exactly how you want them.")
-            
-            st.markdown("#### 👤 Personal Details")
             col_1, col_2 = st.columns(2)
             with col_1:
-                man_name = st.text_input("Full Name *", key="man_name", placeholder="e.g. Syed Zaid Karim")
+                man_name = st.text_input("Full Name *", key="man_name")
                 man_email = st.text_input("Email Address")
                 man_linkedin = st.text_input("LinkedIn Profile URL")
             with col_2:
-                man_target = st.text_input("Target Job Title *", key="man_target", placeholder="e.g. Computer Science Engineering Student")
+                man_target = st.text_input("Target Role *", key="man_target")
                 man_phone = st.text_input("Phone Number")
-                man_github = st.text_input("GitHub / Portfolio URL")
+                man_github = st.text_input("GitHub URL")
             
-            st.markdown("#### 📝 Professional Summary")
-            man_summary = st.text_area("Summary (Optional)", placeholder="e.g. Highly motivated Computer Science student with a passion for building AI-driven applications... Leave blank for AI to auto-generate.", height=100)
-                
-            st.markdown("#### 🎓 Education & Experience")
-            man_education = st.text_area("Education Details *", placeholder="e.g. B.Tech in Computer Science, 2026...")
-            man_experience = st.text_area("Work Experience", placeholder="e.g. Trainee at Venturing Digital. Responsibilities included...")
+            man_summary = st.text_area("Summary (Optional)", height=100)
+            man_education = st.text_area("Education Details *")
+            man_experience = st.text_area("Work Experience")
+            man_skills = st.text_area("Key Skills *")
+            man_projects = st.text_area("Major Projects")
             
-            st.markdown("#### 🛠️ Skills & Projects")
-            man_skills = st.text_area("Key Skills *", placeholder="e.g. Python, SQL, C++, Java, Machine Learning...")
-            man_projects = st.text_area("Major Projects", placeholder="e.g. AI Resume Builder using Streamlit...")
-            
-            if st.button("✨ Generate AI Resume from Form", type="primary"):
+            if st.button("Initialize Synthesis", type="primary"):
                 if man_name and man_target and man_education and man_skills:
-                    st.session_state['target_job'] = man_target 
-                    st.session_state['user_name'] = man_name
-                    st.session_state['user_email'] = man_email
-                    st.session_state['user_phone'] = man_phone
-                    st.session_state['user_linkedin'] = man_linkedin
-                    st.session_state['user_github'] = man_github
+                    st.session_state['target_job'], st.session_state['user_name'] = man_target, man_name
+                    st.session_state['user_email'], st.session_state['user_phone'] = man_email, man_phone
+                    st.session_state['user_linkedin'], st.session_state['user_github'] = man_linkedin, man_github
                     
-                    with st.spinner(f"Structuring data and applying {style} formatting..."):
-                        prompt = f"""
-                        Act as an expert Resume Writer and Career Coach. Create a professional resume using this style format: {style}.
-                        USER DATA:
-                        Target Role: {man_target}
-                        Provided Summary: {man_summary}
-                        Education: {man_education}
-                        Experience: {man_experience}
-                        Projects: {man_projects}
-                        Skills: {man_skills}
-                        RULES:
-                        - Create a compelling "PROFESSIONAL SUMMARY" at the top. Use the 'Provided Summary' if available and refine it, otherwise write one based on their data.
-                        - DO NOT write the contact info (Name, email, phone, links) at the top. The PDF compiler will handle it.
-                        - Organize into clear, UPPERCASE sections (EXPERIENCE, EDUCATION, SKILLS, PROJECTS).
-                        - Expand their rough notes into highly professional bullet points using action verbs.
-                        - Do NOT use markdown code blocks (```). Return ONLY plain text.
-                        """
+                    with st.spinner("Synthesizing..."):
+                        prompt = f"Act as an expert Resume Writer. Style: {style}. Target Role: {man_target}. Summary: {man_summary}. Education: {man_education}. Experience: {man_experience}. Projects: {man_projects}. Skills: {man_skills}. RULES: Create PROFESSIONAL SUMMARY. DO NOT write contact info at the top. Organize into UPPERCASE sections. Return ONLY plain text."
                         st.session_state['resume_text'] = get_gemini_response(prompt)
-                        st.success("✅ Resume successfully built! Go to 'Tab 2' to view, edit, and download.")
-                else:
-                    st.error("⚠️ Please fill in at least your Name, Target Job Title, Education, and Skills.")
+                        st.success("✅ Synthesis Complete! View output in Tab 2.")
+                else: st.error("⚠️ Incomplete Context Parameters.")
+        st.markdown("</div>", unsafe_allow_html=True)
 
     with tab2:
-        st.markdown("### ✍️ Refine & Export")
         if st.session_state['resume_text']:
-            st.markdown("<div class='zna-card' style='padding: 18px;'><div style='font-size: 14px; font-weight: 700; color: #1f6feb; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;'>✨ Enhance with AI</div><p style='color: #6a737d; font-size: 11px;'>Make manual tweaks in the text box below before exporting.</p></div>", unsafe_allow_html=True)
-            st.info("💡 Your Name, Email, Phone, LinkedIn, and GitHub links will automatically be added as clickable hyperlinks at the top of the downloaded PDF.")
-            edited_resume = st.text_area("Final Document (You can manually type and edit here):", value=st.session_state['resume_text'], height=500)
-            st.session_state['resume_text'] = edited_resume
-            
-            pdf_data = create_professional_pdf(
-                st.session_state['resume_text'], 
-                title=st.session_state['user_name'],
-                email=st.session_state['user_email'],
-                phone=st.session_state['user_phone'],
-                linkedin=st.session_state['user_linkedin'],
-                github=st.session_state['user_github']
-            )
-            
-            st.download_button(
-                label="📥 Download ATS-Friendly PDF", 
-                data=pdf_data, 
-                file_name=f"Resume_{st.session_state['user_name'].replace(' ', '_')}.pdf", 
-                mime="application/pdf",
-                type="primary"
-            )
-        else:
-            st.warning("👈 Go back to 'Tab 1' to provide your data and generate your resume first.")
+            st.markdown("<div class='zna-card'><div style='font-size: 14px; font-weight: 700; color: #3b82f6; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;'><i class='fas fa-magic'></i> Final Review</div>", unsafe_allow_html=True)
+            st.session_state['resume_text'] = st.text_area("Edit Generated Document:", value=st.session_state['resume_text'], height=450)
+            pdf_data = create_professional_pdf(st.session_state['resume_text'], title=st.session_state['user_name'], email=st.session_state['user_email'], phone=st.session_state['user_phone'], linkedin=st.session_state['user_linkedin'], github=st.session_state['user_github'])
+            st.download_button("📥 Export PDF Document", data=pdf_data, file_name=f"Resume_{st.session_state['user_name'].replace(' ', '_')}.pdf", mime="application/pdf", type="primary")
+            st.markdown("</div>", unsafe_allow_html=True)
+        else: st.warning("👈 Provide context parameters in Tab 1 to initiate synthesis.")
 
-elif app_mode == "✉️ Cover Letter Generator":
-    st.markdown("<div style='float: right; margin-top: -5px;'><span class='zna-metric-status' style='background: rgba(46, 160, 67, 0.1); color: #2ea043; border: 1px solid rgba(46, 160, 67, 0.3);'>Gemini 2.5 Flash Active 🟢</span></div>", unsafe_allow_html=True)
-    st.markdown("<h3>Letter Generator</h3>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #acb6c0; margin-bottom: 24px; font-size: 14px;'>Hyper-targeted professional narratives powered by AI.</p>", unsafe_allow_html=True)
+elif app_mode == "✉️ Letter Engine":
+    st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-envelope-open-text' style='color: #8b5cf6; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Letter Generator</h2></div>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>Hyper-targeted professional narratives powered by AI.</p>", unsafe_allow_html=True)
 
     if not st.session_state['resume_text']:
-        st.error("⚠️ No resume found in memory! Please build your resume in the 'Smart Resume Builder' first so the AI knows your background.")
+        st.error("⚠️ Missing Profile Context! Synthesize a resume first.")
     else:
-        st.success("✅ Linked to your active resume profile.")
-        
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown("<div class='zna-card'><div style='font-size: 12px; font-weight: 700; color: #57606a; margin-bottom: 15px; text-transform: uppercase;'>JOB TARGET DETAILS</div>", unsafe_allow_html=True)
-            company = st.text_input("Hiring Company Name *", placeholder="e.g. Google, Microsoft, TCS")
-            hiring_manager = st.text_input("Hiring Manager Name (Optional)", placeholder="e.g. John Doe or 'Hiring Team'")
-            job_desc_context = st.text_area("Specific Job Requirements (Optional):", height=150)
+            st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>JOB TARGET DETAILS</div>", unsafe_allow_html=True)
+            company = st.text_input("Target Entity *", placeholder="e.g. Apple, Google")
+            hiring_manager = st.text_input("Hiring Lead (Optional)", placeholder="e.g. Design Team")
+            job_desc_context = st.text_area("Job Highlights / JD:", height=100)
             
-            st.markdown("<div class='cl-gen-narratives'>", unsafe_allow_html=True)
             if st.button("✨ Generate Narratives", type="primary"):
                 if company:
-                    with st.spinner(f"Drafting personalized letter for {company}..."):
-                        prompt = f"""
-                        Write a highly professional and persuasive cover letter.
-                        TARGET JOB DETAILS:
-                        Target Role: {st.session_state['target_job']}
-                        Target Company: {company}
-                        Hiring Manager: {hiring_manager if hiring_manager else 'Hiring Manager'}
-                        Job Description Context: {job_desc_context}
-                        CANDIDATE'S BACKGROUND (Use this to prove why they are a perfect fit):
-                        {st.session_state['resume_text']}
-                        RULES:
-                        - Keep it under 350 words. Be confident, professional, and impactful.
-                        - Match the candidate's skills directly to the company/role.
-                        - Do NOT use markdown code blocks (```). Return plain text.
-                        """
+                    with st.spinner("Drafting narrative..."):
+                        prompt = f"Write cover letter. Target Role: {st.session_state['target_job']}. Company: {company}. Manager: {hiring_manager}. JD Context: {job_desc_context}. Candidate Resume: {st.session_state['resume_text']}. Max 300 words. Plain text."
                         st.session_state['cover_letter_output'] = get_gemini_response(prompt)
-                else:
-                    st.error("⚠️ Please enter the Target Company Name.")
-            st.markdown("</div></div>", unsafe_allow_html=True)
+                else: st.error("⚠️ Missing Target Entity.")
+            st.markdown("</div>", unsafe_allow_html=True)
             
         with col2:
-            st.markdown("<div class='zna-card'><div style='font-size: 12px; font-weight: 700; color: #57606a; margin-bottom: 15px; text-transform: uppercase;'>Drafted Output</div>", unsafe_allow_html=True)
+            st.markdown("<div class='zna-card' style='height: 100%;'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>DRAFTED OUTPUT</div>", unsafe_allow_html=True)
             if 'cover_letter_output' in st.session_state:
                 letter_output = st.session_state['cover_letter_output']
-                st.text_area("Your Custom Cover Letter:", value=letter_output, height=400)
-                
-                pdf_letter = create_professional_pdf(
-                    letter_output, 
-                    title=f"Cover Letter - {st.session_state['user_name']}",
-                    email=st.session_state['user_email'],
-                    phone=st.session_state['user_phone'],
-                    linkedin=st.session_state['user_linkedin'],
-                    github=st.session_state['user_github']
-                )
-                st.download_button(
-                    label="📥 Download PDF", 
-                    data=pdf_letter, 
-                    file_name=f"Cover_Letter_{company.replace(' ', '_')}.pdf", 
-                    mime="application/pdf",
-                    type="primary"
-                )
+                st.text_area("", value=letter_output, height=250, label_visibility="collapsed")
+                pdf_letter = create_professional_pdf(letter_output, title=f"Cover Letter - {st.session_state['user_name']}", email=st.session_state['user_email'], phone=st.session_state['user_phone'], linkedin=st.session_state['user_linkedin'], github=st.session_state['user_github'])
+                st.download_button("📥 Export PDF", data=pdf_letter, file_name=f"CoverLetter_{company}.pdf", mime="application/pdf", type="primary")
             else:
-                st.markdown("<div style='text-align: center; color: #57606a; margin-top: 100px;'><div style='font-size: 18px; font-weight: 700; text-transform: uppercase;'>Awaiting Command...</div></div>", unsafe_allow_html=True)
+                st.markdown("<div style='text-align: center; color: #30363d; margin-top: 60px;'><i class='fas fa-cog fa-3x fa-spin' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>AWAITING COMMAND...</div></div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
-elif app_mode == "🔍 ATS Match Engine":
-    st.markdown("<div style='float: right; margin-top: -5px;'><span class='zna-metric-status' style='background: rgba(46, 160, 67, 0.1); color: #2ea043; border: 1px solid rgba(46, 160, 67, 0.3);'>Gemini 2.5 Flash Active 🟢</span></div>", unsafe_allow_html=True)
-    st.markdown("<h3>ATS Match Engine</h3>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #acb6c0; margin-bottom: 24px; font-size: 14px;'>Semantic comparison with high-resolution score metrics.</p>", unsafe_allow_html=True)
+elif app_mode == "🔍 ATS Scanner":
+    st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); padding: 12px; border-radius: 12px;'><i class='fas fa-shield-alt' style='color: #22c55e; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>ATS Match Engine</h2></div>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>Semantic comparison with high-resolution score metrics.</p>", unsafe_allow_html=True)
     
     col_l, col_r = st.columns(2)
     with col_l:
-        st.markdown("<div class='zna-card'><div style='font-size: 12px; font-weight: 700; color: #57606a; margin-bottom: 15px; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;'>Active Context Profile <span class='zna-metric-status' style='background: rgba(46, 160, 67, 0.1); color: #2ea043; border: 1px solid rgba(46, 160, 67, 0.3); font-size: 9px;'>VALIDATED</span></div>", unsafe_allow_html=True)
+        st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between;'>ACTIVE PROFILE <span style='background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 2px 6px; border-radius: 4px;'>VALIDATED</span></div>", unsafe_allow_html=True)
         if st.session_state['resume_text']:
-            st.text_area("Preview (Read-only)", value=st.session_state['resume_text'][:300] + "...\n[Full resume loaded in memory]", height=200, disabled=True)
-            st.markdown("<div style='border-top: 1px solid #30363d; margin-top: 15px; padding-top: 15px; font-size: 12px; color: #94a3b8;'><div style='display: flex; justify-content: space-between; margin-bottom: 5px;'>EXPERIENCE NODES <span style='color: #f0f6fc; font-weight: bold;'>3</span></div><div style='display: flex; justify-content: space-between;'>SKILL CLUSTERS <span style='color: #f0f6fc; font-weight: bold;'>15+</span></div></div>", unsafe_allow_html=True)
+            st.text_area("", value=st.session_state['resume_text'][:200] + "...\n[Full resume loaded]", height=120, disabled=True, label_visibility="collapsed")
+            st.markdown("<div style='border-top: 1px solid #1e293b; margin-top: 15px; padding-top: 15px; font-size: 11px; color: #64748b;'><div style='display: flex; justify-content: space-between; margin-bottom: 5px;'>EXPERIENCE NODES <span style='color: #e2e8f0; font-weight: bold;'>✔</span></div><div style='display: flex; justify-content: space-between;'>SKILL CLUSTERS <span style='color: #e2e8f0; font-weight: bold;'>✔</span></div></div>", unsafe_allow_html=True)
         else:
-            st.error("⚠️ No resume loaded. Go to the Builder first.")
+            st.error("⚠️ No Profile Context Loaded.")
         st.markdown("</div>", unsafe_allow_html=True)
             
     with col_r:
-        st.markdown("<div class='zna-card'><div style='font-size: 12px; font-weight: 700; color: #57606a; margin-bottom: 15px; text-transform: uppercase;'>Target Job Description</div>", unsafe_allow_html=True)
-        job_desc = st.text_area("Paste the full Job Description here:", height=200, placeholder="Paste the job requirements, skills, and responsibilities...")
+        st.markdown("<div class='zna-card' style='height: 100%;'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>TARGET JOB DESCRIPTION</div>", unsafe_allow_html=True)
+        job_desc = st.text_area("", height=150, placeholder="Paste Target JD...", label_visibility="collapsed")
         st.markdown("</div>", unsafe_allow_html=True)
     
     if st.button("🚀 Initiate Deep Scan", type="primary"):
         if st.session_state['resume_text'] and job_desc:
-            with st.spinner("Analyzing semantic matches and extracting keywords..."):
-                prompt = f"""
-                Act as an Applicant Tracking System (ATS) expert. Compare this Resume against the provided Job Description.
-                RESUME: {st.session_state['resume_text']}
-                JOB DESCRIPTION: {job_desc}
-                OUTPUT FORMAT:
-                1. Match Score: (e.g., 85%)
-                2. Missing Keywords: (List the crucial technical or soft skills mentioned in the JD that are missing)
-                3. Recommendation: (1-2 sentences on exactly what to add to the resume to boost the score)
-                """
-                scan_results = get_gemini_response(prompt)
-                st.markdown("### 📊 Scan Results")
-                st.info(scan_results)
-        else:
-            st.warning("⚠️ You need both a generated Resume and a Job Description to run the scan.")
+            with st.spinner("Analyzing semantic vectors..."):
+                prompt = f"Act as an Applicant Tracking System. Resume: {st.session_state['resume_text']}. JD: {job_desc}. Output: 1. Match Score (%) 2. Missing Keywords 3. Recommendation."
+                st.info(get_gemini_response(prompt))
+        else: st.warning("⚠️ Parameters missing.")
+
+elif app_mode == "🎙️ Interview Prep":
+    st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-microphone-alt' style='color: #f59e0b; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Interview Simulator</h2></div>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>AI-generated questions and strategies based on your exact profile.</p>", unsafe_allow_html=True)
+
+    if not st.session_state['resume_text']:
+        st.error("⚠️ Missing Profile Context! Please build your resume in the 'Resume Builder' tab first so the AI knows your background.")
+    else:
+        col1, col2 = st.columns([0.4, 0.6])
+        with col1:
+            st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>INTERVIEW CONTEXT</div>", unsafe_allow_html=True)
+            interview_company = st.text_input("Target Company (Optional)", placeholder="e.g. Amazon, Google, Startup")
+            interview_type = st.selectbox("Interview Stage", ["HR Phone Screen", "Technical / Hard Skills", "Behavioral / Cultural Fit", "Executive / Final Round"])
+            
+            if st.button("🎙️ Generate Mock Interview", type="primary"):
+                with st.spinner("Analyzing profile for probable questions..."):
+                    prompt = f"""
+                    Act as an Expert Technical Recruiter and Hiring Manager conducting a {interview_type} interview for the role of {st.session_state['target_job']} at {interview_company if interview_company else 'a top tech company'}.
+                    
+                    Candidate's Resume Data:
+                    {st.session_state['resume_text']}
+                    
+                    Based EXACTLY on the specific projects, skills, and experience listed in this resume, generate the top 5 most highly probable interview questions they will be asked.
+                    
+                    For each question:
+                    1. State the Question clearly.
+                    2. Provide a "Strategy": Tell the candidate exactly which part of their resume they should highlight to answer it effectively using the STAR method.
+                    
+                    Keep the formatting clean, professional, and directly actionable.
+                    """
+                    st.session_state['interview_prep_output'] = get_gemini_response(prompt)
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+        with col2:
+            st.markdown("<div class='zna-card' style='height: 100%; min-height: 400px;'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>AI INTERVIEW BLUEPRINT</div>", unsafe_allow_html=True)
+            if 'interview_prep_output' in st.session_state:
+                st.text_area("", value=st.session_state['interview_prep_output'], height=450, label_visibility="collapsed")
+                
+                prep_pdf = create_professional_pdf(st.session_state['interview_prep_output'], title=f"Interview Prep - {st.session_state['user_name']}")
+                st.download_button("📥 Download Prep Sheet (PDF)", data=prep_pdf, file_name=f"Interview_Prep_{st.session_state['user_name'].replace(' ', '_')}.pdf", mime="application/pdf", type="primary")
+            else:
+                st.markdown("<div style='text-align: center; color: #30363d; margin-top: 100px;'><i class='fas fa-user-tie fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>READY TO PREPARE...</div></div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+
+# --- NEW FEATURE: SKILL GAP ANALYZER ---
+elif app_mode == "🗺️ Skill Gap Analyzer":
+    st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-map-marked-alt' style='color: #10b981; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Skill Gap & Roadmap</h2></div>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>Discover what's missing and get a custom 4-week learning plan.</p>", unsafe_allow_html=True)
+
+    if not st.session_state['resume_text']:
+        st.error("⚠️ Missing Profile Context! Please build your resume in the 'Resume Builder' tab first.")
+    else:
+        col1, col2 = st.columns([0.4, 0.6])
+        with col1:
+            st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>TARGET DESTINATION</div>", unsafe_allow_html=True)
+            dream_job = st.text_input("Your Dream Job / Next Role *", placeholder="e.g. Senior Data Scientist, Product Manager")
+            
+            if st.button("🗺️ Generate Learning Roadmap", type="primary"):
+                if dream_job:
+                    with st.spinner(f"Analyzing gap for {dream_job}..."):
+                        prompt = f"""
+                        Act as an Expert Career Coach and Technical Mentor.
+                        
+                        Candidate's Current Resume:
+                        {st.session_state['resume_text']}
+                        
+                        Target Dream Job: {dream_job}
+                        
+                        Please provide:
+                        1. MISSING SKILLS: Identify the top 3-5 crucial skills (technical or soft) required for the dream job that are currently missing or weak in the resume.
+                        2. 4-WEEK ROADMAP: Create a realistic, structured 4-week learning roadmap to help the candidate acquire these specific missing skills. Include actionable weekly goals or project ideas.
+                        
+                        Format cleanly with plain text and bullet points. Do not use markdown code blocks.
+                        """
+                        st.session_state['roadmap_output'] = get_gemini_response(prompt)
+                else:
+                    st.error("⚠️ Please enter your Target Dream Job.")
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+        with col2:
+            st.markdown("<div class='zna-card' style='height: 100%; min-height: 400px;'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>CUSTOM ROADMAP</div>", unsafe_allow_html=True)
+            if 'roadmap_output' in st.session_state:
+                st.text_area("", value=st.session_state['roadmap_output'], height=450, label_visibility="collapsed")
+                
+                roadmap_pdf = create_professional_pdf(st.session_state['roadmap_output'], title=f"Learning Roadmap - {st.session_state['user_name']}")
+                st.download_button("📥 Download Roadmap (PDF)", data=roadmap_pdf, file_name=f"Roadmap_{st.session_state['user_name'].replace(' ', '_')}.pdf", mime="application/pdf", type="primary")
+            else:
+                st.markdown("<div style='text-align: center; color: #30363d; margin-top: 100px;'><i class='fas fa-compass fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>AWAITING DESTINATION...</div></div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
