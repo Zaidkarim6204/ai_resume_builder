@@ -289,30 +289,82 @@ with st.sidebar:
 if app_mode == "📊 Dashboard":
     st.markdown("<div style='float: right;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
     st.markdown("<h2 style='font-size: 32px; font-weight: 800; margin-bottom: 5px;'>Welcome to your Career Workspace</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px;'>Your central hub for AI-powered career growth and optimization.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 25px;'>Your central hub for AI-powered career growth and optimization.</p>", unsafe_allow_html=True)
+
+    # --- 1. DYNAMIC METRIC CARDS ---
+    # These now read live data from the backend memory
+    resume_status = "Active" if st.session_state['resume_text'] else "Awaiting Data"
+    status_color = "#10b981" if st.session_state['resume_text'] else "#f59e0b"
+    job_status = st.session_state['target_job'] if st.session_state['target_job'] else "Not Set"
+    word_count = len(st.session_state['resume_text'].split()) if st.session_state['resume_text'] else 0
 
     col1, col2, col3, col4 = st.columns(4)
-    with col1: st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>TEMPLATES</div><div style='font-size:24px; font-weight:bold; margin-top:5px;'>3 Styles</div></div>", unsafe_allow_html=True)
-    with col2: st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>INPUT MODES</div><div style='font-size:24px; font-weight:bold; margin-top:5px;'>Dual Auth</div></div>", unsafe_allow_html=True)
-    with col3: st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>INTERVIEW AI</div><div style='font-size:24px; font-weight:bold; margin-top:5px;'>Active</div></div>", unsafe_allow_html=True)
-    with col4: st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>ATS SCANNER</div><div style='font-size:24px; font-weight:bold; margin-top:5px;'>Semantic</div></div>", unsafe_allow_html=True)
+    with col1: 
+        st.markdown(f"<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>PROFILE STATUS</div><div style='font-size:20px; font-weight:bold; margin-top:5px; color:{status_color};'>{resume_status}</div></div>", unsafe_allow_html=True)
+    with col2: 
+        st.markdown(f"<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>TARGET ROLE</div><div style='font-size:18px; font-weight:bold; margin-top:5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;' title='{job_status}'>{job_status}</div></div>", unsafe_allow_html=True)
+    with col3: 
+        st.markdown(f"<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>WORDS IN MEMORY</div><div style='font-size:24px; font-weight:bold; margin-top:5px;'>{word_count}</div></div>", unsafe_allow_html=True)
+    with col4: 
+        st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>API CONNECTION</div><div style='font-size:24px; font-weight:bold; margin-top:5px; color:#3b82f6;'>Secure</div></div>", unsafe_allow_html=True)
     
+    # --- 2. CLICKABLE QUICK ACTIONS ---
+    st.markdown("<div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;'>⚡ Quick System Actions</div>", unsafe_allow_html=True)
+    action_col1, action_col2, action_col3 = st.columns(3)
+    
+    with action_col1:
+        if st.button("🔍 Check Profile Readiness", use_container_width=True):
+            if st.session_state['resume_text'] and st.session_state['target_job']:
+                st.success(f"✅ System is fully primed for {st.session_state['target_job']} roles!")
+            else:
+                st.warning("⚠️ Profile incomplete. Head to the Resume Builder first.")
+    
+    with action_col2:
+        if st.button("🚀 Ping Gemini API", use_container_width=True):
+            with st.spinner("Pinging..."):
+                test_response = get_gemini_response("Say 'API is fully operational.'")
+                st.info(f"🤖 Response: {test_response}")
+                
+    with action_col3:
+        if st.button("🧹 Clear System Memory", use_container_width=True):
+            st.session_state['resume_text'] = ""
+            st.session_state['target_job'] = ""
+            st.rerun() # Refreshes the page to clear the dynamic metrics
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # --- 3. INTERACTIVE CHART & LIVE LOGS ---
     dash_col1, dash_col2 = st.columns([0.65, 0.35])
     with dash_col1:
-        st.markdown("<div class='zna-card'><div style='font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;'><i class='fas fa-chart-area' style='color:#3b82f6;'></i> ATS Optimization Trends</div>", unsafe_allow_html=True)
-        chart_data = pd.DataFrame([65, 72, 68, 85, 88, 92, 96], columns=["Match Score (%)"])
+        st.markdown("<div class='zna-card'><div style='font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;'><i class='fas fa-chart-area' style='color:#3b82f6;'></i> System Analytics</div>", unsafe_allow_html=True)
+        
+        # Clickable Dropdown to change chart data
+        chart_metric = st.selectbox("Select metric to visualize:", ["ATS Optimization Trends (%)", "System Memory Usage", "Industry Alignment Score"])
+        
+        # Dynamic data based on what the user clicks
+        if chart_metric == "ATS Optimization Trends (%)":
+            chart_data = pd.DataFrame([65, 72, 68, 85, 88, 92, 96], columns=["Match Score (%)"])
+        elif chart_metric == "System Memory Usage":
+            chart_data = pd.DataFrame([10, 25, 40, 45, 60, 75, word_count if word_count > 0 else 80], columns=["Memory Load"])
+        else:
+            chart_data = pd.DataFrame([40, 50, 55, 70, 85, 88, 95], columns=["Alignment"])
+
         st.line_chart(chart_data, color="#3b82f6")
         st.markdown("</div>", unsafe_allow_html=True)
 
     with dash_col2:
         st.markdown("<div class='zna-card' style='height: 100%;'><div style='font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;'><i class='fas fa-terminal' style='color:#8b5cf6;'></i> Live System Logs</div>", unsafe_allow_html=True)
         st.info("✅ **[SYSTEM]** LLM Engine connected.")
+        
+        # Dynamic Logs
         if st.session_state['resume_text']:
             st.success("✅ **[MEMORY]** Profile loaded securely.")
+            st.info(f"📊 **[DATA]** Vectorized {word_count} words.")
         else:
             st.warning("⏳ **[MEMORY]** Awaiting user input...")
+            
         if st.session_state['target_job']:
-            st.info(f"🎯 **[TARGET]** {st.session_state['target_job']}")
+            st.info(f"🎯 **[TARGET]** Locked on: {st.session_state['target_job']}")
         st.markdown("</div>", unsafe_allow_html=True)
 
 elif app_mode == "📄 Resume Builder":
@@ -555,7 +607,7 @@ elif app_mode == "🎙️ Interview Prep":
         else:
             st.markdown("<div class='zna-card' style='text-align: center; color: #30363d; padding: 60px 0;'><i class='fas fa-user-tie fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>READY TO PREPARE...</div><div style='font-size: 12px; color: #64748b; margin-top: 10px;'>Click 'Generate Mock Interview' to begin.</div></div>", unsafe_allow_html=True)
 
-# --- NEW FEATURE: SKILL GAP ANALYZER ---
+# --- NEW FEATURE: SKILL Gap ANALYZER ---
 elif app_mode == "🗺️ Skill Gap Analyzer":
     st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
     st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-map-marked-alt' style='color: #10b981; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Skill Gap & Roadmap</h2></div>", unsafe_allow_html=True)
