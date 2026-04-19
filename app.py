@@ -20,7 +20,7 @@ if not api_key:
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-flash-latest')
 
-# --- 2. ELITE STUDIO PREMIUM CSS STYLING ---
+# --- 2. ELITE STUDIO PREMIUM GLASSMORPHISM & UI/UX CSS ---
 st.markdown("""
 <style>
     /* Import Fonts and Icons */
@@ -35,75 +35,119 @@ st.markdown("""
         font-family: 'Material Symbols Rounded' !important;
     }
 
-    /* Theme & Backgrounds */
-    .stApp { background-color: #050814; color: #f0f6fc; }
-    .block-container { padding-top: 1rem; padding-bottom: 0rem; }
+    /* --- 1. CUSTOM SLEEK SCROLLBAR --- */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #3b82f6 0%, #1e293b 100%); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%); }
+
+    /* App Background with Glowing Orbs */
+    .stApp { 
+        background: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 40%),
+                    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 40%),
+                    radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.1), transparent 40%),
+                    #050814 !important;
+        background-attachment: fixed !important;
+        color: #f0f6fc; 
+    }
     
+    /* --- 2. SMOOTH PAGE LOAD ANIMATION --- */
+    @keyframes fadeSlideUp {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    .block-container { 
+        padding-top: 1rem; padding-bottom: 0rem; 
+        animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    /* Glassmorphism Inputs */
     .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stSelectbox>div>div>div {
-        background-color: #0f1524 !important;
+        background-color: rgba(15, 21, 36, 0.4) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
         color: #f0f6fc !important;
-        border: 1px solid #1e293b !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-left: 1px solid rgba(255, 255, 255, 0.15) !important;
         border-radius: 10px !important;
         transition: all 0.3s ease;
     }
     .stTextInput>div>div>input:focus, .stTextArea>div>div>textarea:focus {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+        border-color: rgba(59, 130, 246, 0.6) !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.2) !important;
+        background-color: rgba(15, 21, 36, 0.6) !important;
     }
     
-    /* Elite Custom Cards */
+    /* Ultimate Glassmorphism Cards */
     .zna-card {
-        background: linear-gradient(145deg, #0f172a 0%, #0a0f1d 100%);
+        background: rgba(15, 23, 42, 0.35); 
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.05);
+        border-top: 1px solid rgba(255, 255, 255, 0.15); 
+        border-left: 1px solid rgba(255, 255, 255, 0.1); 
         border-radius: 16px;
         padding: 24px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         margin-bottom: 24px;
-        transition: transform 0.3s ease, border-color 0.3s ease;
+        transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        position: relative; /* For hover sweep */
+        overflow: hidden;
+    }
+    
+    /* --- 3. ADVANCED HOVER STATES (LIGHT SWEEP) --- */
+    .zna-card::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 50%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        transform: skewX(-20deg);
+        transition: 0.5s;
+        pointer-events: none;
+    }
+    .zna-card:hover::after {
+        left: 150%;
+        transition: 0.7s ease-in-out;
     }
     .zna-card:hover {
         transform: translateY(-4px);
-        border-color: rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.4);
+        box-shadow: 0 12px 40px 0 rgba(59, 130, 246, 0.2);
     }
 
-    /* --- NEW CSS for Visual Cards (STAR/Roadmap) --- */
-    .validated-badge { background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; margin-bottom: 15px;}
-    .prep-question { font-size: 22px; font-weight: 800; margin-bottom: 15px; color: white;}
-    .core-comp-tag { background: #0f172a; border: 1px solid #1e293b; color: #3b82f6; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 600; text-transform: uppercase; margin-right: 8px;}
-    
-    .star-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 25px; border-top: 1px solid #1e293b; padding-top: 20px;}
-    .star-col { background: #0c111e; border: 1px solid #1e293b; border-radius: 10px; padding: 20px; transition: border-color 0.3s ease;}
-    .star-col:hover { border-color: #3b82f6; }
-    .star-icon { font-size: 20px; color: #3b82f6; margin-bottom: 12px;}
-    .star-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #e2e8f0; margin-bottom: 8px;}
-    .star-text { font-size: 13px; color: #94a3b8; line-height: 1.6;}
+    /* --- 4. UPGRADED EMPTY STATES --- */
+    .empty-state-card {
+        text-align: center; padding: 60px 20px; background: rgba(12, 17, 30, 0.3);
+        border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px;
+        backdrop-filter: blur(10px); margin-top: 20px;
+    }
+    .pulse-icon {
+        font-size: 48px; margin-bottom: 20px;
+        background: -webkit-linear-gradient(#3b82f6, #8b5cf6);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        animation: pulse-glow-icon 2s infinite;
+    }
+    @keyframes pulse-glow-icon {
+        0% { filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.2)); transform: scale(1); }
+        50% { filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.6)); transform: scale(1.05); }
+        100% { filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.2)); transform: scale(1); }
+    }
+    .empty-state-title {
+        font-size: 18px; font-weight: 800; letter-spacing: 1px;
+        background: linear-gradient(90deg, #f8fafc, #94a3b8);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+    }
+    .empty-state-desc { color: #64748b; font-size: 13px; font-weight: 500; }
 
-    .gap-analyzer-grid { display: grid; grid-template-columns: auto 1fr; gap: 40px; }
-    .roadmap-timeline-bar { width: 2px; background: #1e293b; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; position: relative;}
-    .roadmap-timeline-bar::before { content: ''; width: 14px; height: 14px; border-radius: 50%; background: #3b82f6; position: absolute; top: 0; left: -6px; }
-    .roadmap-timeline-bar::after { content: ''; width: 14px; height: 14px; border-radius: 50%; background: #1e293b; position: absolute; bottom: 0; left: -6px; }
-
-    .roadmap-content { display: flex; flex-direction: column; gap: 30px;}
-    .roadmap-week-card { background: #0c111e; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; transition: border-color 0.3s ease;}
-    .roadmap-week-card:hover { border-color: #10b981; }
-    .roadmap-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
-    .roadmap-number { background: #0f172a; color: #10b981; border: 1px solid #1e293b; font-size: 20px; font-weight: 800; width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center;}
-    .roadmap-goal { font-size: 16px; font-weight: 700; color: white;}
-    .roadmap-task-list { list-style: none; padding: 0; margin-top: 15px;}
-    .roadmap-task-list li { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 14px; margin-bottom: 8px;}
-    .roadmap-task-list li i { color: #10b981; font-size: 12px;}
-    .completed-badge { background: #10b981; color: white; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; text-transform: uppercase;}
-    .roadmap-project { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; padding: 15px; margin-top: 15px;}
-    .roadmap-project-title { font-size: 14px; font-weight: 700; color: white; margin-bottom: 5px;}
-    .roadmap-project-desc { font-size: 13px; color: #94a3b8;}
-
-    /* Missing Skill Tag */
-    .missing-skill-tag { background: #4c1d1d; border: 1px solid #7f1d1d; color: #f87171; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 600; text-transform: uppercase; margin-right: 8px;}
-
-    /* Sidebar Styling */
+    /* Glassmorphism Sidebar */
     [data-testid="stSidebar"] {
-        background-color: #050814 !important;
-        border-right: 1px solid #1e293b;
+        background-color: rgba(5, 8, 20, 0.6) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
         width: 300px !important;
     }
     [data-testid="stSidebar"] p, [data-testid="stSidebar"] span:not(.material-symbols-rounded), [data-testid="stSidebar"] label {
@@ -120,15 +164,18 @@ st.markdown("""
         padding: 12px 15px !important;
         display: flex; align-items: center; gap: 12px; transition: all 0.2s ease;
     }
-    .stRadio label:hover [data-testid="stMarkdownContainer"] { background-color: #0f172a !important; color: #e2e8f0 !important;}
+    .stRadio label:hover [data-testid="stMarkdownContainer"] { 
+        background-color: rgba(255,255,255,0.05) !important; 
+        color: #e2e8f0 !important;
+    }
     .stRadio label[data-selected="true"] [data-testid="stMarkdownContainer"] {
-        background: linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%) !important;
+        background: linear-gradient(90deg, rgba(37, 99, 235, 0.2) 0%, transparent 100%) !important;
         border-left: 3px solid #3b82f6 !important;
         color: #ffffff !important;
         font-weight: 600 !important;
     }
 
-    /* Live Pulse Animation */
+    /* Live Pulse Animation for badges */
     @keyframes pulse-green {
         0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
         70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
@@ -142,6 +189,7 @@ st.markdown("""
         background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2);
         color: #22c55e; padding: 6px 12px; border-radius: 50px; font-size: 10px; font-weight: 700;
         text-transform: uppercase; display: inline-flex; align-items: center; letter-spacing: 0.5px;
+        backdrop-filter: blur(4px);
     }
 
     /* Buttons & Links */
@@ -153,21 +201,54 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
     }
     .stButton>button:hover {
-        transform: translateY(-2px); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4) !important;
+        transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.5) !important;
         background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
     }
     
     .side-job-portal {
         border-radius: 12px; text-align: center; padding: 14px; font-weight: 600; cursor: pointer; display: inline-block;
         width: 100%; margin-top: 10px; text-decoration: none; transition: all 0.3s ease; font-size: 13px; color: white !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
-    .side-job-portal:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+    .side-job-portal:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: translateY(-2px);}
+
+    /* Grid & Card Components */
+    .validated-badge { background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; display: inline-block; margin-bottom: 15px;}
+    .prep-question { font-size: 22px; font-weight: 800; margin-bottom: 15px; color: white;}
+    .core-comp-tag { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(59, 130, 246, 0.3); color: #3b82f6; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 600; text-transform: uppercase; margin-right: 8px;}
+    
+    .star-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;}
+    .star-col { background: rgba(12, 17, 30, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 20px; transition: border-color 0.3s ease;}
+    .star-col:hover { border-color: rgba(59, 130, 246, 0.5); background: rgba(12, 17, 30, 0.6);}
+    .star-icon { font-size: 20px; color: #3b82f6; margin-bottom: 12px;}
+    .star-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #e2e8f0; margin-bottom: 8px;}
+    .star-text { font-size: 13px; color: #94a3b8; line-height: 1.6;}
+
+    .gap-analyzer-grid { display: grid; grid-template-columns: auto 1fr; gap: 40px; }
+    .roadmap-timeline-bar { width: 2px; background: rgba(255,255,255,0.1); height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; position: relative;}
+    .roadmap-timeline-bar::before { content: ''; width: 14px; height: 14px; border-radius: 50%; background: #3b82f6; position: absolute; top: 0; left: -6px; box-shadow: 0 0 10px #3b82f6;}
+    .roadmap-timeline-bar::after { content: ''; width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,0.2); position: absolute; bottom: 0; left: -6px; }
+
+    .roadmap-content { display: flex; flex-direction: column; gap: 30px;}
+    .roadmap-week-card { background: rgba(12, 17, 30, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; transition: all 0.3s ease;}
+    .roadmap-week-card:hover { border-color: rgba(16, 185, 129, 0.5); background: rgba(12, 17, 30, 0.6); box-shadow: 0 8px 25px rgba(0,0,0,0.2);}
+    .roadmap-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px;}
+    .roadmap-number { background: rgba(15, 23, 42, 0.8); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 20px; font-weight: 800; width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);}
+    .roadmap-goal { font-size: 16px; font-weight: 700; color: white;}
+    .roadmap-task-list { list-style: none; padding: 0; margin-top: 15px;}
+    .roadmap-task-list li { display: flex; align-items: center; gap: 10px; color: #94a3b8; font-size: 14px; margin-bottom: 8px;}
+    .roadmap-task-list li i { color: #10b981; font-size: 12px;}
+    .completed-badge { background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 700; text-transform: uppercase;}
+    .roadmap-project { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 15px; margin-top: 15px;}
+    .roadmap-project-title { font-size: 14px; font-weight: 700; color: white; margin-bottom: 5px;}
+    .roadmap-project-desc { font-size: 13px; color: #94a3b8;}
+    .missing-skill-tag { background: rgba(76, 29, 29, 0.6); border: 1px solid rgba(248, 113, 113, 0.4); color: #f87171; padding: 4px 10px; border-radius: 50px; font-size: 10px; font-weight: 600; text-transform: uppercase; margin-right: 8px;}
 
     /* Steps UI */
     .zna-steps { display: flex; justify-content: space-around; margin-bottom: 30px; position: relative; }
     .zna-step-node { display: flex; flex-direction: column; align-items: center; width: 33%; position: relative; z-index: 2; }
-    .zna-steps::before { content: ''; position: absolute; height: 2px; background: #1e293b; width: 66%; top: 16px; left: 17%; z-index: 1; }
-    .zna-step-circle { width: 34px; height: 34px; border-radius: 50%; background: #0f1524; border: 2px solid #1e293b; color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; margin-bottom: 10px; transition: all 0.3s ease; }
+    .zna-steps::before { content: ''; position: absolute; height: 2px; background: rgba(255,255,255,0.1); width: 66%; top: 16px; left: 17%; z-index: 1; }
+    .zna-step-circle { width: 34px; height: 34px; border-radius: 50%; background: rgba(15, 21, 36, 0.8); border: 2px solid rgba(255,255,255,0.1); color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; margin-bottom: 10px; transition: all 0.3s ease; backdrop-filter: blur(4px);}
     .step-active .zna-step-circle { background: #3b82f6; border-color: #3b82f6; color: white; box-shadow: 0 0 15px rgba(59,130,246,0.4); }
     .zna-step-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
     .step-active .zna-step-label { color: #f8fafc; }
@@ -255,9 +336,9 @@ with st.sidebar:
     st.markdown("---")
     
     st.markdown(
-        "<div style='background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; margin-top: 20px;'>"
+        "<div style='background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-top: 20px; backdrop-filter: blur(10px);'>"
         "<div style='font-size: 11px; font-weight: 700; color: #3b82f6; text-transform: uppercase; margin-bottom: 8px;'>PRO WORKSPACE</div>"
-        "<div style='font-size: 12px; color: #64748b; line-height: 1.5;'>Personalize your profile to unlock job-specific insights.</div>"
+        "<div style='font-size: 12px; color: #94a3b8; line-height: 1.5;'>Personalize your profile to unlock job-specific insights.</div>"
         "</div>", 
         unsafe_allow_html=True
     )
@@ -271,11 +352,11 @@ with st.sidebar:
         
         st.markdown(
             f"<div style='display: flex; flex-direction: column; gap: 5px; margin-top: 10px;'>"
-            f"<a href='https://www.linkedin.com/jobs/search/?keywords={linkedin_query}' target='_blank' class='side-job-portal' style='background: #0a66c2; border: none;'>"
+            f"<a href='https://www.linkedin.com/jobs/search/?keywords={linkedin_query}' target='_blank' class='side-job-portal' style='background: linear-gradient(135deg, #0a66c2 0%, #004182 100%); border: none;'>"
             f"<i class='fab fa-linkedin' style='margin-right: 8px;'></i> LinkedIn ↗</a>"
-            f"<a href='https://in.indeed.com/jobs?q={indeed_query}' target='_blank' class='side-job-portal' style='background: #2557a7; border: none;'>"
+            f"<a href='https://in.indeed.com/jobs?q={indeed_query}' target='_blank' class='side-job-portal' style='background: linear-gradient(135deg, #2557a7 0%, #163a73 100%); border: none;'>"
             f"<i class='fas fa-info-circle' style='margin-right: 8px;'></i> Indeed ↗</a>"
-            f"<a href='https://www.naukri.com/{naukri_query}-jobs' target='_blank' class='side-job-portal' style='background: #0075FF; border: none;'>"
+            f"<a href='https://www.naukri.com/{naukri_query}-jobs' target='_blank' class='side-job-portal' style='background: linear-gradient(135deg, #0075FF 0%, #0056b3 100%); border: none;'>"
             f"<i class='fas fa-briefcase' style='margin-right: 8px;'></i> Naukri ↗</a>"
             f"</div>", 
             unsafe_allow_html=True
@@ -291,8 +372,6 @@ if app_mode == "📊 Dashboard":
     st.markdown("<h2 style='font-size: 32px; font-weight: 800; margin-bottom: 5px;'>Welcome to your Career Workspace</h2>", unsafe_allow_html=True)
     st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 25px;'>Your central hub for AI-powered career growth and optimization.</p>", unsafe_allow_html=True)
 
-    # --- 1. DYNAMIC METRIC CARDS ---
-    # These now read live data from the backend memory
     resume_status = "Active" if st.session_state['resume_text'] else "Awaiting Data"
     status_color = "#10b981" if st.session_state['resume_text'] else "#f59e0b"
     job_status = st.session_state['target_job'] if st.session_state['target_job'] else "Not Set"
@@ -308,7 +387,6 @@ if app_mode == "📊 Dashboard":
     with col4: 
         st.markdown("<div class='zna-card'><div style='font-size:12px; color:#64748b; font-weight:bold;'>API CONNECTION</div><div style='font-size:24px; font-weight:bold; margin-top:5px; color:#3b82f6;'>Secure</div></div>", unsafe_allow_html=True)
     
-    # --- 2. CLICKABLE QUICK ACTIONS ---
     st.markdown("<div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;'>⚡ Quick System Actions</div>", unsafe_allow_html=True)
     action_col1, action_col2, action_col3 = st.columns(3)
     
@@ -329,19 +407,16 @@ if app_mode == "📊 Dashboard":
         if st.button("🧹 Clear System Memory", use_container_width=True):
             st.session_state['resume_text'] = ""
             st.session_state['target_job'] = ""
-            st.rerun() # Refreshes the page to clear the dynamic metrics
+            st.rerun() 
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- 3. INTERACTIVE CHART & LIVE LOGS ---
     dash_col1, dash_col2 = st.columns([0.65, 0.35])
     with dash_col1:
         st.markdown("<div class='zna-card'><div style='font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;'><i class='fas fa-chart-area' style='color:#3b82f6;'></i> System Analytics</div>", unsafe_allow_html=True)
         
-        # Clickable Dropdown to change chart data
         chart_metric = st.selectbox("Select metric to visualize:", ["ATS Optimization Trends (%)", "System Memory Usage", "Industry Alignment Score"])
         
-        # Dynamic data based on what the user clicks
         if chart_metric == "ATS Optimization Trends (%)":
             chart_data = pd.DataFrame([65, 72, 68, 85, 88, 92, 96], columns=["Match Score (%)"])
         elif chart_metric == "System Memory Usage":
@@ -356,12 +431,11 @@ if app_mode == "📊 Dashboard":
         st.markdown("<div class='zna-card' style='height: 100%;'><div style='font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;'><i class='fas fa-terminal' style='color:#8b5cf6;'></i> Live System Logs</div>", unsafe_allow_html=True)
         st.info("✅ **[SYSTEM]** LLM Engine connected.")
         
-        # Dynamic Logs
         if st.session_state['resume_text']:
             st.success("✅ **[MEMORY]** Profile loaded securely.")
             st.info(f"📊 **[DATA]** Vectorized {word_count} words.")
         else:
-            st.warning("⏳ **[MEMORY]** Awaiting user input...")
+            st.markdown("<div style='display:flex; align-items:center; gap:10px; margin-top:15px;'><i class='fas fa-hourglass-half' style='color:#f59e0b; animation: pulse-glow-icon 2s infinite;'></i> <span style='color:#94a3b8; font-weight:600;'>Awaiting Context Injection...</span></div>", unsafe_allow_html=True)
             
         if st.session_state['target_job']:
             st.info(f"🎯 **[TARGET]** Locked on: {st.session_state['target_job']}")
@@ -369,7 +443,7 @@ if app_mode == "📊 Dashboard":
 
 elif app_mode == "📄 Resume Builder":
     st.markdown("<div style='float: right;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
-    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-microchip' style='color: #3b82f6; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Smart Resume Builder</h2></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; backdrop-filter: blur(10px);'><i class='fas fa-microchip' style='color: #3b82f6; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Smart Resume Builder</h2></div>", unsafe_allow_html=True)
     st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>AI-powered synthesis of your professional data.</p>", unsafe_allow_html=True)
 
     tab1, tab2 = st.tabs(["📋 Setup & Context", "📄 Synthesis Output"])
@@ -449,15 +523,16 @@ elif app_mode == "📄 Resume Builder":
             pdf_data = create_professional_pdf(st.session_state['resume_text'], title=st.session_state['user_name'], email=st.session_state['user_email'], phone=st.session_state['user_phone'], linkedin=st.session_state['user_linkedin'], github=st.session_state['user_github'])
             st.download_button("📥 Export PDF Document", data=pdf_data, file_name=f"Resume_{st.session_state['user_name'].replace(' ', '_')}.pdf", mime="application/pdf", type="primary")
             st.markdown("</div>", unsafe_allow_html=True)
-        else: st.warning("👈 Provide context parameters in Tab 1 to initiate synthesis.")
+        else: 
+            st.markdown("<div class='empty-state-card'><div class='pulse-icon'><i class='fas fa-lock'></i></div><div class='empty-state-title'>MODULE LOCKED</div><div class='empty-state-desc'>Provide context parameters in Tab 1 to initialize synthesis.</div></div>", unsafe_allow_html=True)
 
 elif app_mode == "✉️ Letter Engine":
     st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
-    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-envelope-open-text' style='color: #8b5cf6; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Letter Generator</h2></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; backdrop-filter: blur(10px);'><i class='fas fa-envelope-open-text' style='color: #8b5cf6; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Letter Generator</h2></div>", unsafe_allow_html=True)
     st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>Hyper-targeted professional narratives powered by AI.</p>", unsafe_allow_html=True)
 
     if not st.session_state['resume_text']:
-        st.error("⚠️ Missing Profile Context! Synthesize a resume first.")
+        st.markdown("<div class='empty-state-card'><div class='pulse-icon'><i class='fas fa-lock'></i></div><div class='empty-state-title'>MODULE LOCKED</div><div class='empty-state-desc'>Synthesize a profile in the Resume Builder to unlock the Letter Engine.</div></div>", unsafe_allow_html=True)
     else:
         col1, col2 = st.columns(2)
         with col1:
@@ -487,40 +562,39 @@ elif app_mode == "✉️ Letter Engine":
 
 elif app_mode == "🔍 ATS Scanner":
     st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
-    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); padding: 12px; border-radius: 12px;'><i class='fas fa-shield-alt' style='color: #22c55e; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>ATS Match Engine</h2></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); padding: 12px; border-radius: 12px; backdrop-filter: blur(10px);'><i class='fas fa-shield-alt' style='color: #22c55e; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>ATS Match Engine</h2></div>", unsafe_allow_html=True)
     st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>Semantic comparison with high-resolution score metrics.</p>", unsafe_allow_html=True)
     
-    col_l, col_r = st.columns(2)
-    with col_l:
-        st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between;'>ACTIVE PROFILE <span style='background: rgba(34, 197, 94, 0.1); color: #22c55e; padding: 2px 6px; border-radius: 4px;'>VALIDATED</span></div>", unsafe_allow_html=True)
-        if st.session_state['resume_text']:
+    if not st.session_state['resume_text']:
+        st.markdown("<div class='empty-state-card'><div class='pulse-icon'><i class='fas fa-lock'></i></div><div class='empty-state-title'>MODULE LOCKED</div><div class='empty-state-desc'>Synthesize a profile in the Resume Builder to unlock the ATS Scanner.</div></div>", unsafe_allow_html=True)
+    else:
+        col_l, col_r = st.columns(2)
+        with col_l:
+            st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between;'>ACTIVE PROFILE <span style='background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34,197,94,0.3); color: #22c55e; padding: 2px 6px; border-radius: 4px;'>VALIDATED</span></div>", unsafe_allow_html=True)
             st.text_area("", value=st.session_state['resume_text'][:200] + "...\n[Full resume loaded]", height=120, disabled=True, label_visibility="collapsed")
-            st.markdown("<div style='border-top: 1px solid #1e293b; margin-top: 15px; padding-top: 15px; font-size: 11px; color: #64748b;'><div style='display: flex; justify-content: space-between; margin-bottom: 5px;'>EXPERIENCE NODES <span style='color: #e2e8f0; font-weight: bold;'>✔</span></div><div style='display: flex; justify-content: space-between;'>SKILL CLUSTERS <span style='color: #e2e8f0; font-weight: bold;'>✔</span></div></div>", unsafe_allow_html=True)
-        else:
-            st.error("⚠️ No Profile Context Loaded.")
-        st.markdown("</div>", unsafe_allow_html=True)
-            
-    with col_r:
-        st.markdown("<div class='zna-card' style='height: 100%;'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>TARGET JOB DESCRIPTION</div>", unsafe_allow_html=True)
-        job_desc = st.text_area("", height=150, placeholder="Paste Target JD...", label_visibility="collapsed")
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-    if st.button("🚀 Initiate Deep Scan", type="primary"):
-        if st.session_state['resume_text'] and job_desc:
-            with st.spinner("Analyzing semantic vectors..."):
-                prompt = f"Act as an Applicant Tracking System. Resume: {st.session_state['resume_text']}. JD: {job_desc}. Output: 1. Match Score (%) 2. Missing Keywords 3. Recommendation."
-                st.info(get_gemini_response(prompt))
-        else: st.warning("⚠️ Parameters missing.")
+            st.markdown("<div style='border-top: 1px solid rgba(255,255,255,0.05); margin-top: 15px; padding-top: 15px; font-size: 11px; color: #64748b;'><div style='display: flex; justify-content: space-between; margin-bottom: 5px;'>EXPERIENCE NODES <span style='color: #e2e8f0; font-weight: bold;'>✔</span></div><div style='display: flex; justify-content: space-between;'>SKILL CLUSTERS <span style='color: #e2e8f0; font-weight: bold;'>✔</span></div></div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+                
+        with col_r:
+            st.markdown("<div class='zna-card' style='height: 100%;'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>TARGET JOB DESCRIPTION</div>", unsafe_allow_html=True)
+            job_desc = st.text_area("", height=150, placeholder="Paste Target JD...", label_visibility="collapsed")
+            st.markdown("</div>", unsafe_allow_html=True)
+        
+        if st.button("🚀 Initiate Deep Scan", type="primary"):
+            if st.session_state['resume_text'] and job_desc:
+                with st.spinner("Analyzing semantic vectors..."):
+                    prompt = f"Act as an Applicant Tracking System. Resume: {st.session_state['resume_text']}. JD: {job_desc}. Output: 1. Match Score (%) 2. Missing Keywords 3. Recommendation."
+                    st.info(get_gemini_response(prompt))
+            else: st.warning("⚠️ Parameters missing.")
 
 elif app_mode == "🎙️ Interview Prep":
     st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
-    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-microphone-alt' style='color: #f59e0b; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Interview Simulator</h2></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; backdrop-filter: blur(10px);'><i class='fas fa-microphone-alt' style='color: #f59e0b; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Interview Simulator</h2></div>", unsafe_allow_html=True)
     st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>AI-generated structured questions and STAR method strategies based on your exact profile.</p>", unsafe_allow_html=True)
 
     if not st.session_state['resume_text']:
-        st.error("⚠️ Missing Profile Context! Please build your resume first.")
+        st.markdown("<div class='empty-state-card'><div class='pulse-icon'><i class='fas fa-lock'></i></div><div class='empty-state-title'>MODULE LOCKED</div><div class='empty-state-desc'>Synthesize a profile in the Resume Builder to unlock the Interview Simulator.</div></div>", unsafe_allow_html=True)
     else:
-        # --- INPUT OPTIONS CARD ---
         st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>INTERVIEW CONTEXT</div>", unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
@@ -558,7 +632,6 @@ elif app_mode == "🎙️ Interview Prep":
                     st.error(f"⚠️ Error parsing AI response. It might not be in valid JSON format. Raw output: {json_response[:200]}...")
         st.markdown("</div>", unsafe_allow_html=True)
             
-        # --- OUTPUT VISUALIZATION ---
         if 'interview_prep_data' in st.session_state:
             interview_data = st.session_state['interview_prep_data']
             
@@ -605,16 +678,15 @@ elif app_mode == "🎙️ Interview Prep":
             st.download_button("📥 Download Prep Sheet (PDF)", data=prep_pdf, file_name=f"Interview_Prep_{st.session_state['user_name'].replace(' ', '_')}.pdf", mime="application/pdf", type="primary")
 
         else:
-            st.markdown("<div class='zna-card' style='text-align: center; color: #30363d; padding: 60px 0;'><i class='fas fa-user-tie fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>READY TO PREPARE...</div><div style='font-size: 12px; color: #64748b; margin-top: 10px;'>Click 'Generate Mock Interview' to begin.</div></div>", unsafe_allow_html=True)
+            st.markdown("<div class='empty-state-card' style='margin-top: 0;'><div class='pulse-icon'><i class='fas fa-user-tie'></i></div><div class='empty-state-title'>READY TO PREPARE</div><div class='empty-state-desc'>Click 'Generate Mock Interview' to begin.</div></div>", unsafe_allow_html=True)
 
-# --- NEW FEATURE: SKILL Gap ANALYZER ---
 elif app_mode == "🗺️ Skill Gap Analyzer":
     st.markdown("<div style='float: right; margin-top: -5px;'><span class='status-badge'><i class='fas fa-bolt' style='margin-right: 6px;'></i> Gemini 2.5 Flash Active <span class='live-pulse'></span></span></div>", unsafe_allow_html=True)
-    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 12px;'><i class='fas fa-map-marked-alt' style='color: #10b981; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Skill Gap & Roadmap</h2></div>", unsafe_allow_html=True)
+    st.markdown("<div style='display: flex; align-items: center; gap: 15px; margin-bottom: 5px;'><div style='background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; backdrop-filter: blur(10px);'><i class='fas fa-map-marked-alt' style='color: #10b981; font-size: 24px;'></i></div><h2 style='font-size: 32px; font-weight: 800; margin: 0;'>Skill Gap & Roadmap</h2></div>", unsafe_allow_html=True)
     st.markdown("<p style='color: #94a3b8; font-size: 15px; margin-bottom: 35px; margin-left: 70px;'>Discover what's missing and get a visual, custom 4-week learning roadmap.</p>", unsafe_allow_html=True)
 
     if not st.session_state['resume_text']:
-        st.error("⚠️ Missing Profile Context! Please build your resume in the 'Resume Builder' tab first.")
+        st.markdown("<div class='empty-state-card'><div class='pulse-icon'><i class='fas fa-lock'></i></div><div class='empty-state-title'>MODULE LOCKED</div><div class='empty-state-desc'>Synthesize a profile in the Resume Builder to unlock the Skill Gap Analyzer.</div></div>", unsafe_allow_html=True)
     else:
         st.markdown("<div class='zna-card'><div style='font-size: 11px; font-weight: 700; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;'>TARGET DESTINATION</div>", unsafe_allow_html=True)
         col1, col2 = st.columns([0.7, 0.3])
@@ -708,4 +780,4 @@ elif app_mode == "🗺️ Skill Gap Analyzer":
             st.markdown("</div>", unsafe_allow_html=True) 
 
         else:
-            st.markdown("<div class='zna-card' style='text-align: center; color: #30363d; padding: 60px 0;'><i class='fas fa-compass fa-3x' style='margin-bottom: 20px;'></i><div style='font-size: 14px; font-weight: 700; letter-spacing: 2px;'>AWAITING DESTINATION...</div><div style='font-size: 12px; color: #64748b; margin-top: 10px;'>Enter your Target Dream Job and click 'Generate Visual Roadmap' to begin.</div></div>", unsafe_allow_html=True)
+            st.markdown("<div class='empty-state-card' style='margin-top: 0;'><div class='pulse-icon'><i class='fas fa-compass'></i></div><div class='empty-state-title'>AWAITING DESTINATION</div><div class='empty-state-desc'>Enter your Target Dream Job and click 'Generate Visual Roadmap' to begin.</div></div>", unsafe_allow_html=True)
